@@ -88,16 +88,19 @@ docs/                 архитектура, SMTP, открытые вопро�
 
 ## Переменные окружения (Cloudflare Pages → Settings → Variables and Secrets)
 
+Рекомендуется добавлять все переменные приложения как тип **Secret** — подробности и порядок
+в [docs/cloudflare-deployment.md](docs/cloudflare-deployment.md).
+
 | Переменная | Тип | Назначение |
 | --- | --- | --- |
-| `SMTP_HOST` | Variable | SMTP-сервер провайдера |
-| `SMTP_PORT` | Variable | `465` (TLS) или `587` (STARTTLS). Порт 25 не поддерживается |
-| `SMTP_SECURITY` | Variable | `tls` для 465, `starttls` для 587 |
-| `SMTP_USERNAME` | Variable | Логин SMTP |
+| `SMTP_HOST` | Secret (рекомендуется) | SMTP-сервер провайдера |
+| `SMTP_PORT` | Secret (рекомендуется) | `465` (TLS) или `587` (STARTTLS). Порт 25 не поддерживается |
+| `SMTP_SECURITY` | Secret (рекомендуется) | `tls` для 465, `starttls` для 587 |
+| `SMTP_USERNAME` | Secret (рекомендуется) | Логин SMTP |
 | `SMTP_PASSWORD` | **Secret** | Пароль SMTP / пароль приложения |
-| `MAIL_FROM` | Variable | Отправитель, например `Deutsch mit Akzent <noreply@домен>` |
-| `MAIL_TO` | Variable | Получатель заявок |
-| `ALLOWED_ORIGINS` | Variable | Разрешённые источники через запятую, например `https://deutschmitakzent.de` |
+| `MAIL_FROM` | Secret (рекомендуется) | Отправитель, например `Deutsch mit Akzent <noreply@домен>` |
+| `MAIL_TO` | Secret (рекомендуется) | Получатель заявок |
+| `ALLOWED_ORIGINS` | Secret (рекомендуется) | Разрешённые источники через запятую, например `https://deutschmitakzent.de` |
 | `APPLICATION_KV` | KV binding | Ограничение частоты и защита от повторной отправки. **Не подключено**: без него эти проверки на сервере не выполняются. Решение — в [docs/open-questions.md](docs/open-questions.md) (В-5) |
 | `SITE_URL` | Build variable (необяз.) | Адрес сайта для canonical/sitemap; по умолчанию `https://deutschmitakzent.de` (`astro.config.mjs`) |
 
@@ -108,6 +111,9 @@ docs/                 архитектура, SMTP, открытые вопро�
 посетитель видит сообщение об ошибке, при отправке со скриптом введённые данные остаются в форме.
 
 ## Публикация в Cloudflare Pages (ещё не выполнялась)
+
+Полная инструкция, результаты аудита готовности и найденные проблемы —
+[docs/cloudflare-deployment.md](docs/cloudflare-deployment.md). Кратко:
 
 1. Создать проект в Cloudflare Pages и подключить репозиторий `tabakus/dma`.
 2. Настройки сборки: Build command `npm run build`, Output directory `dist`, переменная `NODE_VERSION=22.23.4`

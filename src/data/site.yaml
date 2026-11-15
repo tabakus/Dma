@@ -2,7 +2,7 @@
 # Схема полей: src/lib/schemas.ts → siteSchema.
 settings:
   name: "Deutsch mit Akzent"
-  # Язык сайта не утверждён (см. docs/open-questions.md). Тексты интерфейса ниже — технические заглушки на русском.
+  # Язык первой версии сайта — русский (утверждено, см. docs/open-questions.md). Тексты интерфейса ниже — технические заглушки.
   locale: ru
   defaultDescription: "Deutsch mit Akzent — авторская онлайн-школа немецкого языка."
   contactEmail: null          # не утверждён
