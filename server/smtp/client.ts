@@ -108,8 +108,29 @@ class Connection {
     return this.expect(stage, ...codes);
   }
 
-  async close(): Promise<void> {
-    await this.socket.close().catch(() => undefined);
+  private closing: Promise<void> | null = null;
+
+  /**
+   * Закрывает соединение, ожидая не дольше timeoutMs. Никогда не завершается ошибкой.
+   * Повторный вызов возвращает то же ожидание и не закрывает сокет второй раз.
+   *
+   * Ожидание ограничено, потому что в Workers Runtime socket.close() может не завершиться
+   * после неудачного TLS-рукопожатия (STARTTLS): без ограничения запрос зависал (П-1).
+   */
+  close(timeoutMs: number): Promise<void> {
+    this.closing ??= new Promise<void>((resolve) => {
+      const timer = setTimeout(resolve, timeoutMs);
+      const done = () => {
+        clearTimeout(timer);
+        resolve();
+      };
+      try {
+        this.socket.close().then(done, done);
+      } catch {
+        done();
+      }
+    });
+    return this.closing;
   }
 }
 
@@ -134,6 +155,8 @@ export interface SendOptions {
   clientName: string;
   /** Общий лимит времени на отправку, мс. */
   timeoutMs?: number;
+  /** Сколько ждать закрытия соединения после отправки или ошибки, мс. */
+  closeTimeoutMs?: number;
 }
 
 export async function sendMail(
@@ -144,6 +167,7 @@ export async function sendMail(
 ): Promise<void> {
   const conn = new Connection(createSocket(config));
   const timeoutMs = options.timeoutMs ?? 15_000;
+  const closeTimeoutMs = options.closeTimeoutMs ?? 1_000;
   let timer: ReturnType<typeof setTimeout> | undefined;
 
   const session = async () => {
@@ -178,15 +202,20 @@ export async function sendMail(
     await conn.command('quit', 'QUIT', 221).catch(() => undefined);
   };
 
+  const run = session();
+  // После таймаута сессия может завершиться ошибкой позже (например, при закрытии сокета):
+  // результат уже определён, необработанного отказа быть не должно.
+  run.catch(() => undefined);
+
   try {
     await Promise.race([
-      session(),
+      run,
       new Promise<never>((_, reject) => {
         timer = setTimeout(() => reject(new SmtpError('timeout', null, `SMTP: нет ответа за ${timeoutMs} мс`)), timeoutMs);
       }),
     ]);
   } finally {
     if (timer) clearTimeout(timer);
-    await conn.close();
+    await conn.close(closeTimeoutMs);
   }
 }
