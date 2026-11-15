@@ -4,7 +4,8 @@ import { handleApplication, type HandlerDeps } from '../server/application/handl
 import { readConfig } from '../server/application/config.ts';
 import type { EmailMessage } from '../server/application/email.ts';
 import { RATE_LIMIT } from '../server/application/protection.ts';
-import { formRequest, MemoryKV, VALID_FIELDS } from './helpers.ts';
+import { sendMail } from '../server/smtp/client.ts';
+import { FakeSmtpServer, formRequest, MemoryKV, VALID_FIELDS } from './helpers.ts';
 
 const ENV = {
   SMTP_HOST: 'smtp.test',
@@ -176,4 +177,27 @@ test('ограничение частоты: после лимита — 429', a
   assert.equal(res.status, 429);
   // IP хранится только в виде хэша
   assert.ok([...kv.store.keys()].every((k) => !k.includes('203.0.113.7')));
+});
+
+test('П-1: SMTP завис после STARTTLS — обработчик возвращает 502 за ограниченное время, без успеха', async () => {
+  const smtp = new FakeSmtpServer({ extensions: ['STARTTLS', 'AUTH PLAIN'], tls: 'hang', close: 'hang' });
+  const config = readConfig({ ...ENV, SMTP_PORT: '587', SMTP_SECURITY: 'starttls' });
+  assert.ok(config.ok);
+  const { deps, events } = setup({
+    config,
+    sendMail: (m, clientName) =>
+      sendMail(config.config.smtp, m, () => smtp.socket(), { clientName, timeoutMs: 100, closeTimeoutMs: 50 }),
+  });
+
+  const t0 = Date.now();
+  const res = await handleApplication(formRequest(VALID_FIELDS), deps);
+  const ms = Date.now() - t0;
+  assert.equal(res.status, 502);
+  assert.deepEqual(await json(res), { ok: false, error: 'delivery_failed' });
+  assert.ok(ms < 600, `ответ через ${ms} мс`);
+  assert.ok(events.some((e) => e.startsWith('delivery_failed') && e.includes('"stage":"timeout"')));
+  assert.equal(smtp.messages.length, 0);
+
+  const html = await handleApplication(formRequest(VALID_FIELDS, { accept: 'text/html' }), deps);
+  assert.equal(html.headers.get('Location'), '/anfrage/fehler/?grund=delivery_failed');
 });

@@ -97,3 +97,84 @@ test('таймаут, если сервер молчит', async () => {
 test('dotStuff нормализует переводы строк и экранирует точки', () => {
   assert.equal(dotStuff('.a\n.b\r\nc'), '..a\r\n..b\r\nc');
 });
+
+// --- П-1: завершение соединения не может подвесить отправку ---------------------------------
+
+const fast = { clientName: 'site.test', timeoutMs: 100, closeTimeoutMs: 50 };
+
+/** Время выполнения промиса в мс. */
+async function timed<T>(p: Promise<T>): Promise<{ ms: number; result: PromiseSettledResult<T> }> {
+  const t0 = Date.now();
+  const [result] = await Promise.allSettled([p]);
+  return { ms: Date.now() - t0, result: result! };
+}
+
+test('STARTTLS успешен: письмо принято, сокет закрыт один раз', async () => {
+  const server = new FakeSmtpServer({ extensions: ['STARTTLS', 'AUTH PLAIN'] });
+  await sendMail(starttls, message, () => server.socket(), fast);
+  assert.equal(server.tlsUpgraded, true);
+  assert.equal(server.messages.length, 1);
+  assert.equal(server.closeCalls, 1);
+});
+
+test('STARTTLS отклонён сервером (454): ошибка starttls, сокет закрыт один раз', async () => {
+  const server = new FakeSmtpServer({ extensions: ['STARTTLS', 'AUTH PLAIN'], override: { STARTTLS: '454 TLS not available\r\n' } });
+  const { result } = await timed(sendMail(starttls, message, () => server.socket(), fast));
+  assert.equal(result.status, 'rejected');
+  assert.ok(result.status === 'rejected' && result.reason instanceof SmtpError && result.reason.stage === 'starttls');
+  assert.equal(server.tlsUpgraded, false);
+  assert.equal(server.closeCalls, 1);
+});
+
+test('TLS-рукопожатие после STARTTLS завершилось ошибкой: быстрый отказ, письмо не отправлено', async () => {
+  const server = new FakeSmtpServer({ extensions: ['STARTTLS', 'AUTH PLAIN'], tls: 'fail' });
+  const { ms, result } = await timed(sendMail(starttls, message, () => server.socket(), fast));
+  assert.equal(result.status, 'rejected');
+  assert.ok(ms < 100, `ожидался отказ до таймаута, прошло ${ms} мс`);
+  assert.equal(server.messages.length, 0);
+  assert.equal(server.closeCalls, 1);
+});
+
+test('TLS не устанавливается и close() зависает: отказ по таймауту за ограниченное время (П-1)', async () => {
+  const server = new FakeSmtpServer({ extensions: ['STARTTLS', 'AUTH PLAIN'], tls: 'hang', close: 'hang' });
+  const { ms, result } = await timed(sendMail(starttls, message, () => server.socket(), fast));
+  assert.equal(result.status, 'rejected');
+  assert.ok(result.status === 'rejected' && result.reason instanceof SmtpError && result.reason.stage === 'timeout');
+  // timeoutMs (100) + closeTimeoutMs (50) + запас на планировщик
+  assert.ok(ms >= 140 && ms < 600, `время ${ms} мс вне ожидаемого диапазона`);
+  assert.equal(server.messages.length, 0);
+  assert.equal(server.closeCalls, 1);
+});
+
+test('close() зависает после успешной отправки: успех возвращается не позже closeTimeoutMs', async () => {
+  const server = new FakeSmtpServer({ close: 'hang' });
+  const { ms, result } = await timed(sendMail(tls, message, () => server.socket(), fast));
+  assert.equal(result.status, 'fulfilled');
+  assert.equal(server.messages.length, 1);
+  assert.ok(ms < 400, `закрытие ждали ${ms} мс`);
+});
+
+test('штатное закрытие не ждёт closeTimeoutMs', async () => {
+  const server = new FakeSmtpServer();
+  const { ms, result } = await timed(sendMail(tls, message, () => server.socket(), { ...fast, closeTimeoutMs: 5_000 }));
+  assert.equal(result.status, 'fulfilled');
+  assert.equal(server.closed, true);
+  assert.ok(ms < 1_000, `закрытие ждали ${ms} мс`);
+});
+
+test('ошибка сокета при закрытии (reject и синхронный throw) не меняет результат отправки', async () => {
+  for (const mode of ['reject', 'throw'] as const) {
+    const ok = new FakeSmtpServer({ close: mode });
+    await sendMail(tls, message, () => ok.socket(), fast);
+    assert.equal(ok.messages.length, 1, `${mode}: письмо принято`);
+    assert.equal(ok.closeCalls, 1);
+
+    const bad = new FakeSmtpServer({ close: mode, override: { 'AUTH PLAIN': '535 auth failed\r\n' } });
+    await assert.rejects(sendMail(tls, message, () => bad.socket(), fast), (e: unknown) => {
+      assert.ok(e instanceof SmtpError);
+      assert.equal(e.stage, 'auth', `${mode}: исходная ошибка не подменяется ошибкой закрытия`);
+      return true;
+    });
+    assert.equal(bad.closeCalls, 1);
+  }
+});

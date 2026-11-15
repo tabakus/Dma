@@ -10,6 +10,13 @@ export interface FakeSmtpOptions {
   extensions?: string[];
   /** Переопределить ответ на конкретную команду (по началу строки). */
   override?: Record<string, string>;
+  /**
+   * Поведение TLS после STARTTLS: ok — рукопожатие успешно; fail — чтение из TLS-сокета
+   * завершается ошибкой; hang — рукопожатие не завершается (чтение никогда не отвечает).
+   */
+  tls?: 'ok' | 'fail' | 'hang';
+  /** Поведение close(): ok; hang — промис не завершается; reject — промис отклоняется; throw — синхронная ошибка. */
+  close?: 'ok' | 'hang' | 'reject' | 'throw';
 }
 
 /**
@@ -20,6 +27,8 @@ export class FakeSmtpServer {
   messages: string[] = [];
   tlsUpgraded = false;
   closed = false;
+  /** Сколько раз клиент вызвал close() (на любом из сокетов соединения). */
+  closeCalls = 0;
   private options: FakeSmtpOptions;
 
   constructor(options: FakeSmtpOptions = {}) {
@@ -103,12 +112,27 @@ export class FakeSmtpServer {
       },
       startTls() {
         server.tlsUpgraded = true;
-        return make();
+        const mode = server.options.tls ?? 'ok';
+        if (mode === 'ok') return make();
+        const broken = make();
+        return {
+          ...broken,
+          read: () =>
+            mode === 'fail'
+              ? Promise.reject(new Error('TLS handshake failed'))
+              : new Promise<Uint8Array | null>(() => undefined),
+          write: async () => undefined,
+        };
       },
-      async close() {
+      close() {
+        server.closeCalls += 1;
+        const mode = server.options.close ?? 'ok';
+        if (mode === 'throw') throw new Error('close threw');
+        if (mode === 'hang') return new Promise<void>(() => undefined);
         server.closed = true;
         waiters.forEach((w) => w(null));
         waiters = [];
+        return mode === 'reject' ? Promise.reject(new Error('close rejected')) : Promise.resolve();
       },
     });
     return make();
