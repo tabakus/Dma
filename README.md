@@ -4,7 +4,12 @@
 форма заявки с отправкой на почту преподавателя.
 
 > **Статус:** технический каркас (этап 1). Дизайна и готовых страниц пока нет.
+> Сайт ещё не опубликован, отправка заявок не настроена (нет SMTP-реквизитов).
 > Нерешённые вопросы — в [docs/open-questions.md](docs/open-questions.md).
+
+- Репозиторий: [github.com/tabakus/dma](https://github.com/tabakus/dma), основная ветка `main`.
+- Язык первой версии сайта — русский (`locale: ru` в `src/data/site.yaml`).
+- Основной домен — `deutschmitakzent.de`; регистрация и настройка не подтверждены.
 
 ## Стек
 
@@ -14,8 +19,8 @@
 | Контент | Markdown + YAML, Astro Content Collections со схемами (Zod) |
 | Стили | Нативный CSS, дизайн-токены в `src/styles/tokens.css` |
 | Интерактивность | TypeScript без клиентских фреймворков (только форма заявки) |
-| Заявки | Cloudflare Pages Functions → собственный SMTP-клиент на `cloudflare:sockets` |
-| Хостинг (предложение) | Cloudflare Pages |
+| Заявки | Cloudflare Pages Functions → собственный SMTP-клиент на `cloudflare:sockets` (с реальным провайдером не проверен, см. [docs/smtp.md](docs/smtp.md)) |
+| Хостинг | Cloudflare Pages (проект в Cloudflare ещё не создан) |
 | Тесты | Встроенный в Node.js `node:test` (без дополнительных зависимостей) |
 
 ## Требования
@@ -60,7 +65,8 @@ src/
   layouts/            BaseLayout: <head>, SEO, шапка, подвал
   styles/             tokens.css, global.css
   lib/                схемы данных, выбор опубликованного, форматирование, schema.org
-  pages/              маршруты (/, /kurse/, /seminare/, /[страница]/, /anfrage/*, robots.txt, products.json)
+  pages/              маршруты (/, /kurse/, /seminare/, /[страница]/, /anfrage/*, robots.txt, products.json);
+                      адреса разделов — рабочие технические значения
 shared/               контракт формы: поля, лимиты, коды ошибок (общий для браузера и сервера)
 functions/api/        Cloudflare Pages Function: POST /api/application
 server/
@@ -92,18 +98,24 @@ docs/                 архитектура, SMTP, открытые вопро�
 | `MAIL_FROM` | Variable | Отправитель, например `Deutsch mit Akzent <noreply@домен>` |
 | `MAIL_TO` | Variable | Получатель заявок |
 | `ALLOWED_ORIGINS` | Variable | Разрешённые источники через запятую, например `https://deutschmitakzent.de` |
-| `APPLICATION_KV` | KV binding (необяз.) | Ограничение частоты и защита от повторной отправки |
-| `SITE_URL` | Build variable (необяз.) | Адрес сайта для canonical/sitemap; по умолчанию `https://deutschmitakzent.de` |
+| `APPLICATION_KV` | KV binding | Ограничение частоты и защита от повторной отправки. **Не подключено**: без него эти проверки на сервере не выполняются. Решение — в [docs/open-questions.md](docs/open-questions.md) (В-5) |
+| `SITE_URL` | Build variable (необяз.) | Адрес сайта для canonical/sitemap; по умолчанию `https://deutschmitakzent.de` (`astro.config.mjs`) |
 
-Без SMTP-переменных сайт собирается и работает, а форма отвечает ошибкой `not_configured`
-(письмо не теряется молча: посетитель видит ошибку, данные остаются в форме).
+Секреты хранятся только в защищённых переменных Cloudflare (`SMTP_PASSWORD` — тип Secret),
+не в исходном коде и не в `wrangler.toml`. Для локальной проверки — `.dev.vars` (в `.gitignore`).
 
-## Публикация (после утверждения хостинга)
+Без SMTP-переменных сайт собирается и работает, а форма отвечает ошибкой `not_configured`:
+посетитель видит сообщение об ошибке, при отправке со скриптом введённые данные остаются в форме.
 
-1. Создать проект в Cloudflare Pages, подключить GitHub-репозиторий.
-2. Настройки сборки: Build command `npm run build`, Output directory `dist`, переменная `NODE_VERSION=22.23.4`.
+## Публикация в Cloudflare Pages (ещё не выполнялась)
+
+1. Создать проект в Cloudflare Pages и подключить репозиторий `tabakus/dma`.
+2. Настройки сборки: Build command `npm run build`, Output directory `dist`, переменная `NODE_VERSION=22.23.4`
+   (проект требует Node.js ≥ 22.23.4; доступность версии в сборке Cloudflare не проверена — В-12).
 3. Задать переменные окружения (таблица выше) отдельно для Production и Preview.
 4. Каждый Pull Request получает preview-адрес; продакшен обновляется после слияния в `main`.
 5. Откат: Cloudflare Pages → Deployments → выбрать предыдущий деплой → Rollback.
 
+Перед публичным запуском формы нужны: SMTP-реквизиты и проверка по [docs/smtp.md](docs/smtp.md),
+рабочее ограничение частоты и защита от повторной отправки (В-5), юридические тексты (В-6…В-8).
 Домен, почтовый ящик и публикация на этом этапе не выполнялись.
