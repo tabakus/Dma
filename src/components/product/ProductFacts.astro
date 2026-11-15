@@ -1,0 +1,36 @@
+---
+/**
+ * Характеристики продукта из frontmatter. Показываются только заполненные поля:
+ * отсутствующие данные не подменяются заглушками.
+ */
+import type { Product } from '../../lib/products';
+import { formatDate, formatPrice, isoDate } from '../../lib/format';
+import { getSiteSettings } from '../../lib/site';
+
+interface Props {
+  product: Product;
+}
+const { product } = Astro.props;
+const { locale } = await getSiteSettings();
+const d = product.data;
+const end = 'end' in d ? d.end : undefined;
+---
+
+<dl class="product-facts">
+  {d.level && <><dt>Уровень</dt><dd>{d.level.join(' – ')}</dd></>}
+  <dt>Формат</dt>
+  <dd>{d.format}</dd>
+  {d.duration && <><dt>Продолжительность</dt><dd>{d.duration}</dd></>}
+  {
+    d.start && (
+      <>
+        <dt>Дата</dt>
+        <dd>
+          <time datetime={isoDate(d.start)}>{formatDate(d.start, locale)}</time>
+          {end && <> – <time datetime={isoDate(end)}>{formatDate(end, locale)}</time></>}
+        </dd>
+      </>
+    )
+  }
+  {d.price !== undefined && <><dt>Стоимость</dt><dd>{formatPrice(d.price, d.currency, locale)}</dd></>}
+</dl>

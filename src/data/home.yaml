@@ -1,0 +1,6 @@
+# Тексты главной страницы. Ключ `content` — обязательная обёртка.
+# Схема полей: src/lib/schemas.ts → homeSchema. Блоки главной будут добавлены на этапе дизайна.
+content:
+  hero:
+    title: "Deutsch mit Akzent"
+    lead: null      # текст предоставит автор

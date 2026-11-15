@@ -1,0 +1,21 @@
+---
+/** Технический каркас главной: проверяет данные и каталог. Дизайн — отдельный этап. */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProductGrid from '../components/catalog/ProductGrid.astro';
+import { getPublishedCourses, getPublishedSeminars } from '../lib/products';
+import { getHomeContent } from '../lib/site';
+
+const home = await getHomeContent();
+const [courses, seminars] = await Promise.all([getPublishedCourses(), getPublishedSeminars()]);
+---
+
+<BaseLayout title={home.seo?.title} description={home.seo?.description}>
+  <h1>{home.hero.title}</h1>
+  {home.hero.lead && <p>{home.hero.lead}</p>}
+
+  <h2>Курсы</h2>
+  <ProductGrid products={courses} emptyText="Опубликованных курсов пока нет." />
+
+  <h2>Семинары</h2>
+  <ProductGrid products={seminars} emptyText="Опубликованных семинаров пока нет." />
+</BaseLayout>

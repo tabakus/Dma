@@ -1,0 +1,25 @@
+---
+import type { Product } from '../../lib/products';
+import ProductCard from './ProductCard.astro';
+
+interface Props {
+  products: Product[];
+  /** Текст, если опубликованных продуктов нет. */
+  emptyText: string;
+}
+const { products, emptyText } = Astro.props;
+---
+
+{
+  products.length === 0 ? (
+    <p class="catalog-empty">{emptyText}</p>
+  ) : (
+    <ul class="product-grid">
+      {products.map((p) => (
+        <li>
+          <ProductCard product={p} />
+        </li>
+      ))}
+    </ul>
+  )
+}

@@ -1,0 +1,25 @@
+---
+import { getCollection } from 'astro:content';
+import { getSiteSettings } from '../../lib/site';
+const site = await getSiteSettings();
+// Ссылки на информационные страницы показываются, только если страница опубликована.
+const published = new Set((await getCollection('pages', (p) => p.data.status === 'published')).map((p) => `/${p.id}/`));
+const links = site.footerNav.filter((l) => published.has(l.href));
+---
+
+<footer class="site-footer">
+  <p>© {new Date().getFullYear()} {site.name}</p>
+  {
+    links.length > 0 && (
+      <nav aria-label="Правовая информация">
+        <ul>
+          {links.map((l) => (
+            <li>
+              <a href={l.href}>{l.label}</a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    )
+  }
+</footer>

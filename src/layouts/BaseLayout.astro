@@ -1,0 +1,64 @@
+---
+/**
+ * Базовый каркас любой страницы: <head> с SEO-метаданными, шапка, подвал.
+ * Визуального дизайна здесь нет — он появится на отдельном этапе.
+ */
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+import { getSiteSettings } from '../lib/site';
+import '../styles/global.css';
+
+interface Props {
+  /** Заголовок страницы без названия сайта. Для главной не передаётся. */
+  title?: string;
+  description?: string;
+  noindex?: boolean;
+  /** Тип Open Graph: website для разделов, article для страниц продуктов. */
+  ogType?: 'website' | 'article';
+  /** Абсолютный или корневой путь к изображению для Open Graph. */
+  ogImage?: string;
+  /** Структурированные данные schema.org (JSON-LD). */
+  jsonLd?: Record<string, unknown>;
+}
+
+const { title, description, noindex = false, ogType = 'website', ogImage, jsonLd } = Astro.props;
+const site = await getSiteSettings();
+
+const fullTitle = title ? `${title} — ${site.name}` : site.name;
+const metaDescription = description ?? site.defaultDescription;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined;
+---
+
+<!doctype html>
+<html lang={site.locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={metaDescription} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={metaDescription} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={site.locale} />
+    {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
+
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <!-- Шрифты подключаются только локально из public/fonts (DSGVO). Иконки сайта — после утверждения бренд-материалов. -->
+
+    {jsonLd && <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />}
+  </head>
+  <body>
+    <a class="skip-link" href="#main">К содержанию</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

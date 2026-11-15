@@ -1,0 +1,16 @@
+---
+import type { Product } from '../../lib/products';
+import { productUrl } from '../../lib/products';
+import ProductFacts from '../product/ProductFacts.astro';
+
+interface Props {
+  product: Product;
+}
+const { product } = Astro.props;
+---
+
+<article class="product-card">
+  <h3><a href={productUrl(product)}>{product.data.title}</a></h3>
+  <p>{product.data.summary}</p>
+  <ProductFacts product={product} />
+</article>

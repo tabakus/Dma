@@ -1,0 +1,23 @@
+---
+import Logo from '../brand/Logo.astro';
+import { getSiteSettings } from '../../lib/site';
+const site = await getSiteSettings();
+const current = Astro.url.pathname;
+---
+
+<header class="site-header">
+  <Logo />
+  <nav aria-label="Основная навигация">
+    <ul>
+      {
+        site.nav.map((item) => (
+          <li>
+            <a href={item.href} aria-current={current.startsWith(item.href) ? 'page' : undefined}>
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</header>

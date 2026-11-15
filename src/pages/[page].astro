@@ -1,0 +1,20 @@
+---
+/** Информационные страницы из src/content/pages (Impressum, Datenschutz и др.). Только опубликованные. */
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  const pages = await getCollection('pages', (p) => p.data.status === 'published');
+  return pages.map((page) => ({ params: { page: page.id }, props: { page } }));
+}
+
+const { page } = Astro.props;
+const { Content } = await render(page);
+---
+
+<BaseLayout title={page.data.title} description={page.data.description} noindex={page.data.noindex}>
+  <article>
+    <h1>{page.data.title}</h1>
+    <Content />
+  </article>
+</BaseLayout>

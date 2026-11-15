@@ -1,0 +1,41 @@
+# Глобальные настройки сайта. Ключ `settings` — обязательная обёртка (так устроен загрузчик данных Astro).
+# Схема полей: src/lib/schemas.ts → siteSchema.
+settings:
+  name: "Deutsch mit Akzent"
+  # Язык сайта не утверждён (см. docs/open-questions.md). Тексты интерфейса ниже — технические заглушки на русском.
+  locale: ru
+  defaultDescription: "Deutsch mit Akzent — авторская онлайн-школа немецкого языка."
+  contactEmail: null          # не утверждён
+  nav:
+    - label: "Курсы"
+      href: /kurse/
+    - label: "Семинары"
+      href: /seminare/
+  footerNav:
+    - label: "Impressum"
+      href: /impressum/
+    - label: "Datenschutz"
+      href: /datenschutz/
+  form:
+    title: "Заявка"
+    labels:
+      name: "Имя"
+      email: "Email"
+      phone: "Телефон"
+      message: "Комментарий"
+      # Текст согласия требует юридической проверки (см. docs/open-questions.md).
+      consent: "Я согласен(на) на обработку персональных данных согласно политике конфиденциальности."
+      submit: "Отправить заявку"
+      optional: "необязательно"
+    states:
+      sending: "Отправляем…"
+      success: "Спасибо! Заявка отправлена. Мы ответим на указанный email."
+      error: "Не удалось отправить заявку. Ваши данные сохранены в форме — попробуйте ещё раз."
+      retry: "Отправить ещё раз"
+    errors:
+      required: "Заполните это поле."
+      too_short: "Слишком коротко."
+      too_long: "Слишком длинно."
+      invalid: "Проверьте значение."
+      rate_limited: "Слишком много заявок подряд. Попробуйте через несколько минут."
+      unknown_product: "Этот курс или семинар сейчас недоступен для записи."

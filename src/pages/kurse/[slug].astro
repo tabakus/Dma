@@ -1,0 +1,41 @@
+---
+/**
+ * Страница продукта. Генерируется для каждой опубликованной папки в src/content/courses/.
+ * Архивные и черновые продукты страниц не получают.
+ */
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProductFacts from '../../components/product/ProductFacts.astro';
+import ApplicationForm from '../../components/forms/ApplicationForm.astro';
+import { getPublishedCourses, productUrl, type Product } from '../../lib/products';
+import { productJsonLd } from '../../lib/structured-data';
+
+export async function getStaticPaths() {
+  const products = await getPublishedCourses();
+  return products.map((product) => ({ params: { slug: product.id }, props: { product } }));
+}
+
+interface Props {
+  product: Product;
+}
+const { product } = Astro.props;
+const { Content } = await render(product);
+const d = product.data;
+const url = new URL(productUrl(product), Astro.site).href;
+---
+
+<BaseLayout
+  title={d.seo?.title ?? d.title}
+  description={d.seo?.description ?? d.summary}
+  ogType="article"
+  ogImage={d.cover?.src}
+  jsonLd={productJsonLd(product, url)}
+>
+  <article>
+    <h1>{d.title}</h1>
+    <p>{d.summary}</p>
+    <ProductFacts product={product} />
+    <Content />
+  </article>
+  <ApplicationForm productType="course" productSlug={product.id} productTitle={d.title} />
+</BaseLayout>

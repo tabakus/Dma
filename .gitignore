@@ -1,0 +1,16 @@
+# зависимости и сборка
+node_modules/
+dist/
+.astro/
+.wrangler/
+
+# локальные секреты — НИКОГДА не коммитить
+.dev.vars
+.env
+.env.*
+!.env.example
+
+# системное
+.DS_Store
+*.log
+npm-debug.log*

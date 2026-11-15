@@ -1,0 +1,21 @@
+{
+  // Проверка типов для серверной части (Cloudflare Pages Functions), общего контракта и тестов.
+  // Сборкой этих файлов занимается Cloudflare Pages; тесты запускает Node (node --test) без компиляции,
+  // поэтому разрешён только «стираемый» синтаксис TypeScript (erasableSyntaxOnly).
+  "compilerOptions": {
+    "target": "ES2023",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ES2023"],
+    "types": ["@cloudflare/workers-types", "node"],
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "erasableSyntaxOnly": true,
+    "skipLibCheck": true
+  },
+  "include": ["functions/**/*", "server/**/*", "shared/**/*", "tests/**/*"]
+}

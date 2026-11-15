@@ -1,0 +1,17 @@
+---
+/**
+ * Ошибка отправки формы без JavaScript (сервер переходит сюда, если письмо не отправлено).
+ * Код причины приходит в ?grund=… (для диагностики); посетителю показывается общий текст.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getSiteSettings } from '../../lib/site';
+const { form, nav } = await getSiteSettings();
+---
+
+<BaseLayout title={form.title} noindex>
+  <h1>{form.title}</h1>
+  <p>{form.states.error}</p>
+  <ul>
+    {nav.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+  </ul>
+</BaseLayout>

@@ -1,0 +1,11 @@
+---
+/** Подтверждение для отправки формы без JavaScript. Сервер переходит сюда только после успешной отправки письма. */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getSiteSettings } from '../../lib/site';
+const { form } = await getSiteSettings();
+---
+
+<BaseLayout title={form.title} noindex>
+  <h1>{form.title}</h1>
+  <p>{form.states.success}</p>
+</BaseLayout>

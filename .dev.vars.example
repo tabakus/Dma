@@ -1,0 +1,20 @@
+# Пример локальных переменных для `wrangler pages dev`.
+# Скопируйте в .dev.vars (файл в .gitignore) и подставьте реальные значения.
+# Значения ниже — заглушки на зарезервированном домене .invalid, они не работают.
+#
+# В продакшене те же имена задаются в Cloudflare Pages → Settings → Variables and Secrets.
+# SMTP_PASSWORD добавляется ТОЛЬКО как Secret (зашифрованная переменная).
+
+SMTP_HOST=smtp.example.invalid
+# 465 = TLS с первого байта (SMTP_SECURITY=tls), 587 = STARTTLS (SMTP_SECURITY=starttls). Порт 25 не поддерживается.
+SMTP_PORT=465
+SMTP_SECURITY=tls
+SMTP_USERNAME=user@example.invalid
+SMTP_PASSWORD=change-me
+
+# Отправитель (обычно ящик на домене сайта) и получатель заявок.
+MAIL_FROM=Deutsch mit Akzent <noreply@example.invalid>
+MAIL_TO=teacher@example.invalid
+
+# Откуда принимаются заявки (через запятую). Для локальной разработки добавьте адрес dev-сервера.
+ALLOWED_ORIGINS=https://deutschmitakzent.de,http://localhost:8788

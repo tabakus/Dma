@@ -1,0 +1,13 @@
+---
+/** Каталог: все опубликованные продукты раздела. Технический каркас. */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProductGrid from '../../components/catalog/ProductGrid.astro';
+import { getPublishedCourses } from '../../lib/products';
+
+const products = await getPublishedCourses();
+---
+
+<BaseLayout title="Курсы">
+  <h1>Курсы</h1>
+  <ProductGrid products={products} emptyText="Опубликованных курсов пока нет." />
+</BaseLayout>

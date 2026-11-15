@@ -1,0 +1,10 @@
+---
+/**
+ * Временный текстовый знак. Векторный логотип (утверждённая концепция) подключается
+ * на этапе дизайна вместе с бренд-материалами — тогда меняется только этот компонент.
+ */
+import { getSiteSettings } from '../../lib/site';
+const site = await getSiteSettings();
+---
+
+<a class="logo" href="/" aria-label={`${site.name} — на главную`}>{site.name}</a>

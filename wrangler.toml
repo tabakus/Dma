@@ -1,0 +1,13 @@
+# Конфигурация Cloudflare Pages (используется `wrangler pages dev` и при деплое через Wrangler).
+# Здесь НЕТ секретов и реквизитов: SMTP-переменные задаются в панели Cloudflare
+# (Settings → Variables and Secrets) или локально в .dev.vars (см. .dev.vars.example).
+name = "deutschmitakzent"
+pages_build_output_dir = "./dist"
+compatibility_date = "2026-11-01"
+
+# Необязательное KV-хранилище для ограничения частоты заявок и защиты от повторной отправки.
+# Без него обработчик работает, но эти две проверки выполняются только на стороне браузера
+# и правилами Cloudflare (см. docs/architecture.md). Раскомментировать после создания namespace:
+# [[kv_namespaces]]
+# binding = "APPLICATION_KV"
+# id = "<id namespace из панели Cloudflare>"

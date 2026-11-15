@@ -1,0 +1,110 @@
+---
+/**
+ * Единая форма заявки для курсов и семинаров.
+ *
+ * Работает и без JavaScript: обычный POST на /api/application, сервер отвечает переходом
+ * на /anfrage/danke/ или /anfrage/fehler/. Со скриптом (application-form.ts) отправка идёт
+ * без перезагрузки, ошибки показываются у полей, введённые данные не теряются.
+ *
+ * Продукт передаётся автоматически из страницы (type + slug). Сервер сверяет его
+ * с опубликованным каталогом и сам подставляет название в письмо.
+ */
+import { APPLICATION_ENDPOINT, FIELD, LIMITS, type ProductType } from '../../../shared/application-contract';
+import { getSiteSettings } from '../../lib/site';
+
+interface Props {
+  productType: ProductType;
+  productSlug: string;
+  productTitle: string;
+}
+const { productType, productSlug, productTitle } = Astro.props;
+const { form } = await getSiteSettings();
+const L = form.labels;
+const id = (name: string) => `application-${name}`;
+---
+
+<section class="application" aria-labelledby={id('title')}>
+  <h2 id={id('title')}>{form.title}: {productTitle}</h2>
+
+  <form
+    class="application-form"
+    method="post"
+    action={APPLICATION_ENDPOINT}
+    novalidate
+    data-application-form
+    data-messages={JSON.stringify({ ...form.states, errors: form.errors })}
+  >
+    <input type="hidden" name={FIELD.productType} value={productType} />
+    <input type="hidden" name={FIELD.productSlug} value={productSlug} />
+    <input type="hidden" name={FIELD.submissionId} value="" data-submission-id />
+
+    <!-- Honeypot: скрыто от людей и экранных читалок; заполненное поле = бот. -->
+    <div class="hp" aria-hidden="true">
+      <label for={id('website')}>Website</label>
+      <input id={id('website')} type="text" name={FIELD.honeypot} tabindex="-1" autocomplete="off" />
+    </div>
+
+    <div class="field">
+      <label for={id('name')}>{L.name}</label>
+      <input
+        id={id('name')}
+        name={FIELD.name}
+        type="text"
+        autocomplete="name"
+        required
+        minlength={LIMITS.nameMin}
+        maxlength={LIMITS.nameMax}
+        aria-describedby={id('name-error')}
+      />
+      <p class="field-error" id={id('name-error')} data-error-for={FIELD.name}></p>
+    </div>
+
+    <div class="field">
+      <label for={id('email')}>{L.email}</label>
+      <input
+        id={id('email')}
+        name={FIELD.email}
+        type="email"
+        autocomplete="email"
+        required
+        maxlength={LIMITS.emailMax}
+        aria-describedby={id('email-error')}
+      />
+      <p class="field-error" id={id('email-error')} data-error-for={FIELD.email}></p>
+    </div>
+
+    <div class="field">
+      <label for={id('phone')}>{L.phone} <span class="optional">({L.optional})</span></label>
+      <input
+        id={id('phone')}
+        name={FIELD.phone}
+        type="tel"
+        autocomplete="tel"
+        maxlength={LIMITS.phoneMax}
+        aria-describedby={id('phone-error')}
+      />
+      <p class="field-error" id={id('phone-error')} data-error-for={FIELD.phone}></p>
+    </div>
+
+    <div class="field">
+      <label for={id('message')}>{L.message} <span class="optional">({L.optional})</span></label>
+      <textarea id={id('message')} name={FIELD.message} rows="4" maxlength={LIMITS.messageMax} aria-describedby={id('message-error')}
+      ></textarea>
+      <p class="field-error" id={id('message-error')} data-error-for={FIELD.message}></p>
+    </div>
+
+    <div class="field field-consent">
+      <input id={id('consent')} name={FIELD.consent} type="checkbox" value="yes" required aria-describedby={id('consent-error')} />
+      <label for={id('consent')}>{L.consent}</label>
+      <p class="field-error" id={id('consent-error')} data-error-for={FIELD.consent}></p>
+    </div>
+
+    <button type="submit" data-submit>{L.submit}</button>
+    <p class="form-status" role="status" aria-live="polite" data-status></p>
+  </form>
+</section>
+
+<script>
+  import { initApplicationForms } from './application-form';
+  initApplicationForms();
+</script>
