@@ -18,7 +18,7 @@
 | --- | --- |
 | Генератор сайта | [Astro](https://astro.build) 7, статическая сборка |
 | Контент | Markdown + YAML, Astro Content Collections со схемами (Zod) |
-| Стили | Нативный CSS, дизайн-токены в `src/styles/tokens.css` |
+| Стили | Нативный CSS, дизайн-токены в `src/styles/tokens.css` (бренд-система v1.1, [docs/brand-system.md](docs/brand-system.md)) |
 | Интерактивность | TypeScript без клиентских фреймворков (только форма заявки) |
 | Заявки | Cloudflare Pages Functions → собственный SMTP-клиент на `cloudflare:sockets` (с реальным провайдером не проверен, см. [docs/smtp.md](docs/smtp.md)) |
 | Хостинг | Cloudflare Pages, проект `deutschmitakzent` (подключён к `tabakus/dma`) |
@@ -64,7 +64,8 @@ src/
   content.config.ts   подключение коллекций и схем
   components/         ДИЗАЙН: brand/ layout/ catalog/ product/ forms/
   layouts/            BaseLayout: <head>, SEO, шапка, подвал
-  styles/             tokens.css, global.css
+  styles/             tokens.css (цвета, шрифт, шкала), global.css
+  assets/brand/       исходные SVG утверждённого логотипа
   lib/                схемы данных, выбор опубликованного, форматирование, schema.org
   pages/              маршруты (/, /kurse/, /seminare/, /[страница]/, /anfrage/*, robots.txt, products.json);
                       адреса разделов — рабочие технические значения
@@ -73,7 +74,7 @@ functions/api/        Cloudflare Pages Function: POST /api/application
 server/
   application/        проверки, защита, формирование письма, обработчик
   smtp/               SMTP-клиент для Workers Runtime + адаптер cloudflare:sockets
-public/               _headers, fonts/, assets/
+public/               _headers, fonts/ (Inter WOFF2 + OFL.txt), assets/
 tests/                тесты node:test
 docs/                 архитектура, SMTP, открытые вопросы
 ```
