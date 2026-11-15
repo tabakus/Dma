@@ -41,7 +41,20 @@
 Кроме того, функция `functions/api/application.ts` собирается в бандл, в котором из внешних модулей
 импортируется только `cloudflare:sockets` (модулей Node.js нет).
 
+### Локальная проверка в workerd (15.11.2026)
+
+`wrangler pages dev` (Wrangler 4.156.1) с фиктивным SMTP-сервером без TLS — подробности
+в `docs/cloudflare-deployment.md`:
+
+- `connect()` из `cloudflare:sockets` устанавливает соединение; приветствие, EHLO и команда STARTTLS проходят.
+- Порт 465 при недоступном сервере: ответ 502 `delivery_failed` за доли секунды (в логе этап `unknown`, П-3).
+- **Ошибка П-1:** при сбое TLS-рукопожатия после STARTTLS запрос зависает — после срабатывания
+  таймаута не завершается закрытие сокета. Исправление предложено и проверено на временной копии,
+  в код не внесено (вопрос В-19).
+
 ## 3. Что ещё предстоит проверить с реальным провайдером
+
+До проверки нужно согласовать и внести исправление П-1 (В-19).
 
 - Работа `cloudflare:sockets` в Cloudflare Pages Functions с выбранным SMTP-сервером.
 - TLS-рукопожатие и проверка сертификата сервера провайдера (465 и/или 587).
@@ -59,7 +72,8 @@
   файл `.dev.vars` (в `.gitignore`) по образцу `.dev.vars.example`, где только заглушки на домене `.invalid`.
 
 Переменные: `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURITY`, `SMTP_USERNAME`, `SMTP_PASSWORD`,
-`MAIL_FROM`, `MAIL_TO`, `ALLOWED_ORIGINS`. Описание — в `README.md`.
+`MAIL_FROM`, `MAIL_TO`, `ALLOWED_ORIGINS`. Описание — в `README.md`, порядок добавления —
+в `docs/cloudflare-deployment.md` (рекомендуется тип Secret для всех).
 
 ## Требования к провайдеру
 
