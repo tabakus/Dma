@@ -1,25 +1,102 @@
 ---
+/**
+ * Подвал: логотип для тёмного фона, слоган, навигация. Контакты и юридические ссылки показываются,
+ * только когда соответствующие данные есть (contactEmail в site.yaml, опубликованные страницы).
+ */
 import { getCollection } from 'astro:content';
+import Logo from '../brand/Logo.astro';
 import { getSiteSettings } from '../../lib/site';
+
 const site = await getSiteSettings();
 // Ссылки на информационные страницы показываются, только если страница опубликована.
 const published = new Set((await getCollection('pages', (p) => p.data.status === 'published')).map((p) => `/${p.id}/`));
-const links = site.footerNav.filter((l) => published.has(l.href));
+const legal = site.footerNav.filter((l) => published.has(l.href));
 ---
 
 <footer class="site-footer">
-  <p>© {new Date().getFullYear()} {site.name}</p>
-  {
-    links.length > 0 && (
-      <nav aria-label="Правовая информация">
-        <ul>
-          {links.map((l) => (
+  <div class="container inner">
+    <div class="brand">
+      <Logo variant="dark" />
+      <p class="slogan" lang="de">Dein Deutsch. Dein Weg. <span>Dein Fortschritt.</span></p>
+    </div>
+    <nav aria-label="Навигация в подвале">
+      <ul>
+        {
+          site.nav.map((item) => (
             <li>
-              <a href={l.href}>{l.label}</a>
+              <a href={item.href}>{item.label}</a>
             </li>
-          ))}
-        </ul>
-      </nav>
-    )
-  }
+          ))
+        }
+      </ul>
+    </nav>
+    {
+      site.contactEmail && (
+        <div class="contact">
+          <p class="label">Контакты</p>
+          <a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a>
+        </div>
+      )
+    }
+  </div>
+  <div class="container base">
+    <p>© {new Date().getFullYear()} {site.name}</p>
+    {
+      legal.length > 0 && (
+        <nav aria-label="Правовая информация">
+          <ul>
+            {legal.map((l) => (
+              <li>
+                <a href={l.href}>{l.label}</a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )
+    }
+  </div>
 </footer>
+
+<style>
+  .site-footer {
+    background: var(--color-ink);
+    color: var(--color-milk);
+    padding-block: clamp(3rem, 2rem + 4vw, 5rem) var(--space-4);
+  }
+  .inner {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr auto;
+    gap: var(--space-5);
+    align-items: start;
+    padding-bottom: clamp(2.5rem, 2rem + 2vw, 4rem);
+  }
+  .brand { display: grid; gap: var(--space-4); justify-items: start; }
+  .slogan {
+    margin: 0;
+    font-family: var(--font-display);
+    font-variation-settings: 'opsz' var(--font-display-opsz);
+    font-weight: var(--weight-bold);
+    font-size: var(--text-h4);
+    line-height: var(--leading-h4);
+  }
+  .slogan span { color: var(--color-accent); }
+  ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.65rem; }
+  a { color: var(--color-milk); text-decoration: none; }
+  a:hover { color: var(--color-accent); text-decoration: underline; }
+  .label { margin: 0 0 0.5rem; font-size: var(--text-label); letter-spacing: var(--tracking-label); text-transform: uppercase; opacity: 0.75; }
+  .base {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding-top: var(--space-4);
+    border-top: 1px solid color-mix(in srgb, var(--color-milk) 18%, transparent);
+    font-size: var(--text-caption);
+    color: color-mix(in srgb, var(--color-milk) 80%, transparent);
+  }
+  .base p { margin: 0; }
+  .base ul { display: flex; gap: var(--space-4); }
+  @media (max-width: 48rem) {
+    .inner { grid-template-columns: 1fr; gap: var(--space-4); }
+  }
+</style>
