@@ -107,7 +107,11 @@ export const pageSchema = z.strictObject({
 
 const link = z.strictObject({
   label: nonEmpty(60),
-  href: z.string().trim().regex(/^\/[a-z0-9\-/]*$/, 'Внутренняя ссылка вида /kurse/'),
+  /** Внутренняя ссылка: /kurse/ или якорь на странице: /#obuchenie. */
+  href: z
+    .string()
+    .trim()
+    .regex(/^\/[a-z0-9\-/]*(#[a-z0-9-]+)?$/, 'Внутренняя ссылка вида /kurse/ или /#razdel'),
 });
 
 /** Глобальные настройки сайта: src/data/site.yaml, ключ `settings`. */
@@ -119,6 +123,8 @@ export const siteSchema = z.strictObject({
   /** Контактный email; null, пока не утверждён. */
   contactEmail: z.email().nullable(),
   nav: z.array(link),
+  /** Заметная кнопка в шапке (например, «Оставить заявку»). */
+  headerCta: link.optional(),
   footerNav: z.array(link),
   form: z.strictObject({
     title: nonEmpty(120),
@@ -141,11 +147,71 @@ export const siteSchema = z.strictObject({
   }),
 });
 
-/** Тексты главной страницы: src/data/home.yaml, ключ `content`. */
+const textBlock = (max: number) => nonEmpty(max);
+const sectionHead = {
+  eyebrow: nonEmpty(60).optional(),
+  title: nonEmpty(160),
+};
+
+/**
+ * Тексты главной страницы: src/data/home.yaml, ключ `content`.
+ * Каждый блок главной берёт тексты отсюда; в компонентах текстов нет.
+ * Блоки author.text/name/photo необязательны: без них показывается аккуратное место для будущих материалов.
+ */
 export const homeSchema = z.strictObject({
   seo,
   hero: z.strictObject({
+    eyebrow: nonEmpty(60).optional(),
     title: nonEmpty(120),
     lead: nonEmpty(300).nullable(),
+    primaryCta: link.optional(),
+    secondaryLinks: z.array(link).max(3).default([]),
   }),
+  directions: z
+    .strictObject({
+      ...sectionHead,
+      intro: textBlock(300).optional(),
+      courses: z.strictObject({ title: nonEmpty(60), text: textBlock(400), points: z.array(nonEmpty(80)).max(5), link }),
+      seminars: z.strictObject({ title: nonEmpty(60), text: textBlock(400), points: z.array(nonEmpty(80)).max(5), link }),
+    })
+    .optional(),
+  philosophy: z
+    .strictObject({
+      statement: nonEmpty(160),
+      text: textBlock(400).optional(),
+      /** Пример исправленной ошибки: неверный и верный вариант (немецкий). */
+      example: z.strictObject({ wrong: nonEmpty(120), right: nonEmpty(120), note: nonEmpty(160).optional() }).optional(),
+    })
+    .optional(),
+  method: z
+    .strictObject({
+      ...sectionHead,
+      lead: textBlock(300).optional(),
+      steps: z.array(z.strictObject({ title: nonEmpty(60), text: textBlock(240) })).min(2).max(6),
+    })
+    .optional(),
+  results: z
+    .strictObject({
+      ...sectionHead,
+      items: z.array(nonEmpty(160)).min(1).max(8),
+      note: textBlock(240).optional(),
+    })
+    .optional(),
+  author: z
+    .strictObject({
+      ...sectionHead,
+      name: nonEmpty(80).nullable().default(null),
+      text: textBlock(800).nullable().default(null),
+      /** Подпись на месте будущей фотографии, пока её нет. */
+      photoPlaceholder: nonEmpty(120).optional(),
+      link: link.optional(),
+    })
+    .optional(),
+  closing: z
+    .strictObject({
+      title: nonEmpty(160),
+      text: textBlock(300).optional(),
+      links: z.array(link).max(3).default([]),
+    })
+    .optional(),
 });

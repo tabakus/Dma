@@ -6,11 +6,23 @@ settings:
   locale: ru
   defaultDescription: "Deutsch mit Akzent — авторская онлайн-школа немецкого языка."
   contactEmail: null          # не утверждён
+  # Основное меню. «Обучение» и «Об авторе» пока ведут к разделам главной страницы:
+  # отдельных страниц ещё нет. «Контакты» не показываются, пока нет контактных данных.
   nav:
+    - label: "Главная"
+      href: /
+    - label: "Обучение"
+      href: /#obuchenie
     - label: "Курсы"
       href: /kurse/
     - label: "Семинары"
       href: /seminare/
+    - label: "Об авторе"
+      href: /#avtor
+  # Заявка оформляется на странице выбранного курса или семинара, поэтому кнопка ведёт к выбору обучения.
+  headerCta:
+    label: "Оставить заявку"
+    href: /#obuchenie
   footerNav:
     - label: "Impressum"
       href: /impressum/

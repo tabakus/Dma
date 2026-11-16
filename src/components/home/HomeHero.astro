@@ -1,0 +1,189 @@
+---
+/**
+ * Первый экран главной. Тексты — home.yaml → hero.
+ * Графика: модуль 2×2 из языка логотипа (система) и разрозненные «правила» вокруг (то, с чем приходит ученик).
+ * При загрузке правила и модули встают на места; без анимации (reduced motion) — сразу итоговая композиция.
+ */
+import { splitAccent } from '../../lib/text';
+import type { HomeContent } from '../../lib/site';
+
+interface Props {
+  hero: HomeContent['hero'];
+}
+const { hero } = Astro.props;
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="container grid">
+    <div class="copy">
+      {hero.eyebrow && <p class="eyebrow">{hero.eyebrow}</p>}
+      <h1 id="hero-title">
+        {splitAccent(hero.title).map((p) => (p.accent ? <span class="accent">{p.text}</span> : p.text))}
+      </h1>
+      {hero.lead && <p class="lead">{hero.lead}</p>}
+      <div class="actions">
+        {hero.primaryCta && <a class="btn btn-primary" href={hero.primaryCta.href}>{hero.primaryCta.label}</a>}
+        {
+          hero.secondaryLinks.length > 0 && (
+            <ul class="more" aria-label="Разделы обучения">
+              {hero.secondaryLinks.map((l) => (
+                <li>
+                  <a href={l.href}>
+                    {l.label} <span aria-hidden="true">→</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )
+        }
+      </div>
+    </div>
+
+    <div class="art" aria-hidden="true">
+      <div class="field">
+        <span class="chip c1" lang="de">der / die / das</span>
+        <span class="chip c2" lang="de">weil … Verb</span>
+        <span class="chip c3" lang="de">hätte</span>
+        <span class="chip c4" lang="de">zu + Infinitiv</span>
+        <span class="chip c5" lang="de">Perfekt</span>
+        <span class="chip c6" lang="de">mit + Dativ</span>
+        <div class="modules">
+          <div class="m m1" lang="de">Kasus</div>
+          <div class="m m2" lang="de">Verben</div>
+          <div class="m m3" lang="de">Satzbau</div>
+          <div class="m m4" lang="de"><span>Dein<br />Akzent</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding-block: clamp(2.5rem, 1rem + 6vw, 6.5rem) clamp(3.5rem, 2rem + 6vw, 7.5rem);
+    overflow: hidden;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: clamp(2rem, 1rem + 4vw, 5rem);
+    align-items: center;
+  }
+  .copy { display: grid; gap: var(--space-4); min-width: 0; }
+  .copy .eyebrow { margin: 0; }
+  h1 { margin: 0; max-width: 14ch; }
+  .accent { color: var(--color-accent); }
+  .lead {
+    margin: 0;
+    max-width: 36ch;
+    font-size: var(--text-lead);
+    line-height: var(--leading-lead);
+    color: var(--color-muted);
+  }
+  .actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) var(--space-5); margin-top: var(--space-2); }
+  .more { display: flex; gap: var(--space-4); list-style: none; margin: 0; padding: 0; }
+  .more a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    min-height: var(--tap-min);
+    font-weight: var(--weight-semibold);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+  }
+  .more a:hover { border-bottom-color: currentColor; }
+  .more a span { transition: transform 0.15s; }
+  .more a:hover span { transform: translateX(3px); }
+
+  /* ---------- Графика ---------- */
+  .art { min-width: 0; }
+  .field {
+    position: relative;
+    width: min(100%, 32rem);
+    aspect-ratio: 1;
+    margin-inline: auto;
+    /* фоновая сетка модулей — «порядок» */
+    background-image:
+      linear-gradient(var(--color-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--color-line) 1px, transparent 1px);
+    background-size: calc(100% / 6) calc(100% / 6);
+    background-position: -1px -1px;
+    border-radius: calc(var(--radius) * 2);
+  }
+  .modules {
+    position: absolute;
+    inset: 16.66%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 6%;
+  }
+  .m {
+    display: flex;
+    align-items: flex-end;
+    padding: 9%;
+    border-radius: calc(var(--radius) * 1.5);
+    font-family: var(--font-display);
+    font-variation-settings: 'opsz' var(--font-display-opsz);
+    font-weight: var(--weight-bold);
+    font-size: clamp(0.95rem, 0.7rem + 0.8vw, 1.25rem);
+    line-height: 1.1;
+    animation: settle 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  .m1 { background: var(--color-graphite); color: var(--color-milk); --from: translate(-14%, -10%) rotate(-8deg); }
+  .m2 { background: var(--color-white); color: var(--color-text); border: 1px solid var(--color-line); --from: translate(12%, -14%) rotate(7deg); animation-delay: 0.08s; }
+  .m3 { background: var(--color-sand); color: var(--color-text); --from: translate(-10%, 12%) rotate(6deg); animation-delay: 0.16s; }
+  .m4 {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-radius: 50%;
+    background: var(--color-accent);
+    color: var(--color-ink);
+    /* как в логотипе: круг выходит за пределы сетки — индивидуальность внутри системы */
+    translate: 18% 8%;
+    --from: translate(30%, 30%) scale(0.6);
+    animation-delay: 0.35s;
+  }
+  .chip {
+    position: absolute;
+    padding: 0.4em 0.75em;
+    border: 1px solid var(--color-line);
+    border-radius: 999px;
+    background: var(--color-white);
+    color: var(--color-muted);
+    font-size: clamp(0.72rem, 0.62rem + 0.35vw, 0.875rem);
+    font-weight: var(--weight-medium);
+    white-space: nowrap;
+    box-shadow: 0 6px 18px -12px color-mix(in srgb, var(--color-ink) 45%, transparent);
+    animation: drift 1.1s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  .c1 { top: 3%; left: 2%; rotate: -6deg; --from: translate(-20%, -30%); }
+  .c2 { top: 6%; right: 0; rotate: 5deg; --from: translate(25%, -25%); animation-delay: 0.05s; }
+  .c3 { top: 46%; left: -2%; rotate: 8deg; --from: translate(-40%, 0); animation-delay: 0.1s; }
+  .c4 { bottom: 4%; left: 6%; rotate: -4deg; --from: translate(-20%, 30%); animation-delay: 0.15s; }
+  .c5 { bottom: 1%; right: 22%; rotate: 3deg; --from: translate(10%, 40%); animation-delay: 0.2s; }
+  .c6 { top: 40%; right: -3%; rotate: -7deg; --from: translate(40%, 0); animation-delay: 0.25s; }
+
+  @keyframes settle { from { transform: var(--from); } }
+  @keyframes drift { from { transform: var(--from); } }
+  @media (prefers-reduced-motion: reduce) {
+    .m, .chip { animation: none; }
+  }
+
+  /* ---------- Планшет ---------- */
+  @media (max-width: 60rem) {
+    .grid { grid-template-columns: 1fr; }
+    h1 { max-width: 16ch; }
+    .art { order: 2; }
+    .field { width: min(100%, 28rem); }
+  }
+  /* ---------- Телефон: компактная графика, меньше «правил», кнопка на всю ширину ---------- */
+  @media (max-width: 30rem) {
+    .actions { flex-direction: column; align-items: stretch; gap: var(--space-2); }
+    .actions .btn { width: 100%; }
+    .more { justify-content: space-between; }
+    .field { width: 88%; }
+    .c4, .c6 { display: none; }
+  }
+</style>

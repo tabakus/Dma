@@ -12,3 +12,5 @@ export async function getHomeContent() {
   if (!entry) throw new Error('src/data/home.yaml: нет ключа content');
   return entry.data;
 }
+
+export type HomeContent = Awaited<ReturnType<typeof getHomeContent>>;

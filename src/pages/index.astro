@@ -1,21 +1,27 @@
 ---
-/** Технический каркас главной: проверяет данные и каталог. Дизайн — отдельный этап. */
+/**
+ * Главная страница. Все тексты — src/data/home.yaml (homeSchema); компоненты секций — src/components/home/.
+ * Необязательные секции не выводятся, если их нет в home.yaml.
+ */
 import BaseLayout from '../layouts/BaseLayout.astro';
-import ProductGrid from '../components/catalog/ProductGrid.astro';
-import { getPublishedCourses, getPublishedSeminars } from '../lib/products';
+import HomeHero from '../components/home/HomeHero.astro';
+import HomeDirections from '../components/home/HomeDirections.astro';
+import HomePhilosophy from '../components/home/HomePhilosophy.astro';
+import HomeMethod from '../components/home/HomeMethod.astro';
+import HomeResults from '../components/home/HomeResults.astro';
+import HomeAuthor from '../components/home/HomeAuthor.astro';
+import HomeClosing from '../components/home/HomeClosing.astro';
 import { getHomeContent } from '../lib/site';
 
 const home = await getHomeContent();
-const [courses, seminars] = await Promise.all([getPublishedCourses(), getPublishedSeminars()]);
 ---
 
-<BaseLayout title={home.seo?.title} description={home.seo?.description}>
-  <h1>{home.hero.title}</h1>
-  {home.hero.lead && <p>{home.hero.lead}</p>}
-
-  <h2>Курсы</h2>
-  <ProductGrid products={courses} emptyText="Опубликованных курсов пока нет." />
-
-  <h2>Семинары</h2>
-  <ProductGrid products={seminars} emptyText="Опубликованных семинаров пока нет." />
+<BaseLayout title={home.seo?.title} description={home.seo?.description} fullBleed>
+  <HomeHero hero={home.hero} />
+  {home.directions && <HomeDirections directions={home.directions} />}
+  {home.philosophy && <HomePhilosophy philosophy={home.philosophy} />}
+  {home.method && <HomeMethod method={home.method} />}
+  {home.results && <HomeResults results={home.results} />}
+  {home.author && <HomeAuthor author={home.author} />}
+  {home.closing && <HomeClosing closing={home.closing} />}
 </BaseLayout>

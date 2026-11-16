@@ -69,3 +69,45 @@ test('страница: статус обязателен, noindex по умол
   assert.equal(pageSchema.parse({ title: 'Impressum', status: 'draft' }).noindex, false);
   assert.ok(!pageSchema.safeParse({ title: 'Impressum' }).success);
 });
+
+// --- Главная страница и ссылки ---------------------------------------------------------------
+import { homeSchema, siteSchema } from '../src/lib/schemas.ts';
+
+const minimalHome = { hero: { title: 'Заголовок', lead: null } };
+
+test('главная: минимальный набор (только hero) проходит, необязательные секции можно не задавать', () => {
+  const r = homeSchema.parse(minimalHome);
+  assert.deepEqual(r.hero.secondaryLinks, []);
+  assert.equal(r.directions, undefined);
+});
+
+test('главная: ссылки принимают якорь на странице, но не внешние адреса', () => {
+  const ok = homeSchema.safeParse({ hero: { ...minimalHome.hero, primaryCta: { label: 'Обучение', href: '/#obuchenie' } } });
+  assert.ok(ok.success);
+  for (const href of ['https://evil.test/', '#obuchenie', '/kurse/#A', 'javascript:alert(1)']) {
+    const bad = homeSchema.safeParse({ hero: { ...minimalHome.hero, primaryCta: { label: 'x', href } } });
+    assert.ok(!bad.success, href);
+  }
+});
+
+test('главная: автор без имени и текста допустим (место для будущих материалов)', () => {
+  const r = homeSchema.parse({ ...minimalHome, author: { title: 'Автор методики' } });
+  assert.equal(r.author?.name, null);
+  assert.equal(r.author?.text, null);
+});
+
+test('главная: методика требует хотя бы двух шагов, опечатка в поле отклоняется', () => {
+  assert.ok(!homeSchema.safeParse({ ...minimalHome, method: { title: 'М', steps: [{ title: 'a', text: 'b' }] } }).success);
+  assert.ok(!homeSchema.safeParse({ ...minimalHome, heroo: {} }).success);
+});
+
+test('настройки: headerCta необязательна и проверяется как внутренняя ссылка', () => {
+  const base = {
+    name: 'X', locale: 'ru', defaultDescription: 'D', contactEmail: null, nav: [{ label: 'Главная', href: '/' }], footerNav: [],
+    form: { title: 'T', labels: { name: 'a', email: 'b', phone: 'c', message: 'd', consent: 'e', submit: 'f', optional: 'g' },
+      states: { sending: 'a', success: 'b', error: 'c', retry: 'd' }, errors: {} },
+  };
+  assert.ok(siteSchema.safeParse(base).success);
+  assert.ok(siteSchema.safeParse({ ...base, headerCta: { label: 'Оставить заявку', href: '/#obuchenie' } }).success);
+  assert.ok(!siteSchema.safeParse({ ...base, headerCta: { label: 'x', href: 'mailto:a@b.de' } }).success);
+});

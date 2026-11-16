@@ -19,9 +19,11 @@ interface Props {
   ogImage?: string;
   /** Структурированные данные schema.org (JSON-LD). */
   jsonLd?: Record<string, unknown>;
+  /** Секции страницы на всю ширину (сами задают контейнер). Используется главной. */
+  fullBleed?: boolean;
 }
 
-const { title, description, noindex = false, ogType = 'website', ogImage, jsonLd } = Astro.props;
+const { title, description, noindex = false, ogType = 'website', ogImage, jsonLd, fullBleed = false } = Astro.props;
 const site = await getSiteSettings();
 
 const fullTitle = title ? `${title} — ${site.name}` : site.name;
@@ -59,7 +61,7 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined;
   <body>
     <a class="skip-link" href="#main">К содержанию</a>
     <Header />
-    <main id="main">
+    <main id="main" class:list={{ 'full-bleed': fullBleed }}>
       <slot />
     </main>
     <Footer />

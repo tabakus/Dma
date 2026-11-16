@@ -62,7 +62,7 @@ src/
     pages/*.md                 Impressum, Datenschutz и др.
   data/               site.yaml (настройки, меню, тексты формы), home.yaml (главная)
   content.config.ts   подключение коллекций и схем
-  components/         ДИЗАЙН: brand/ layout/ catalog/ product/ forms/
+  components/         ДИЗАЙН: brand/ layout/ catalog/ product/ forms/ home/ (секции главной)
   layouts/            BaseLayout: <head>, SEO, шапка, подвал
   styles/             tokens.css (цвета, шрифт, шкала), global.css
   assets/brand/       исходные SVG утверждённого логотипа
