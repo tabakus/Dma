@@ -41,7 +41,7 @@ const { video } = Astro.props.direction.data;
     align-content: center;
     gap: var(--space-3);
     aspect-ratio: 16 / 9;
-    max-width: 100%;
+    width: min(100%, 56rem);
     border-radius: calc(var(--radius) * 2);
     background:
       radial-gradient(circle at 80% 85%, color-mix(in srgb, var(--color-accent) 35%, transparent) 0 18%, transparent 18.2%),
