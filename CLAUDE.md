@@ -40,6 +40,7 @@
 | `src/content/pages/` | Content | Информационные страницы (`impressum.md`, `datenschutz.md` …) | **Да** |
 | `src/data/site.yaml` | Content | Название, язык, меню, тексты интерфейса формы | Да, по задаче |
 | `src/data/home.yaml` | Content | Тексты главной страницы (по секциям, схема `homeSchema`) | Да, по задаче |
+| `src/data/directions.yaml` | Content | Подразделы «Обучения»: Deutsche Grammatik, Berufseinstieg (название, адрес, видеоурок) | Да, по задаче |
 | `src/components/` | Design | Компоненты: `brand/`, `layout/`, `catalog/`, `product/`, `forms/`, `home/` (секции главной) | Нет |
 | `src/layouts/` | Design | Каркас страницы, `<head>`, SEO-метаданные | Нет |
 | `src/styles/` | Design | `tokens.css` (дизайн-токены), `global.css` | Нет |
@@ -58,19 +59,31 @@
 
 1. Скопируй папку-образец `src/content/courses/_example-course/` в новую папку **без** `_` в начале.
    Имя папки = адрес страницы: латиница в нижнем регистре, цифры, дефисы (`grammatik-b1` → `/kurse/grammatik-b1/`).
-2. Заполни frontmatter **только реальными данными владельца**. Обязательные поля курса:
-   `title`, `status`, `level`, `format`, `duration`, `summary`. Необязательные: `order`, `start`,
-   `price` (евро), `currency` (только `EUR`), `cover` + `coverAlt`, `seo`.
+2. Заполни frontmatter **только реальными данными владельца**. Всегда обязательны: `title`, `status`,
+   `direction` (`grammatik` | `beruf`). Для публикации (`status: published`) ещё обязательны `level`, `format`,
+   `duration`, `summary`. Необязательные: `titleDe`, `order`, `start`, `price` (евро), `currency` (только `EUR`),
+   `cover` + `coverAlt`, `seo`. План курса — раздел в тексте `index.md`.
 3. Текст страницы — в теле `index.md` (Markdown), без HTML и без встроенных скриптов.
 4. Изображение-обложку положи в ту же папку и укажи `cover: ./cover.jpg` и `coverAlt`.
-5. `status: draft`, пока владелец не подтвердил публикацию; `published` — по его решению.
+5. Статусы: `draft` — черновик, на сайте не виден; `announced` — анонс: название видно в списках с пометкой
+   «Скоро», страницы и заявки нет; `published` — своя страница (описание, план, стоимость, форма заявки);
+   `archived` — снят. `published` — только по решению владельца и когда есть все данные.
 6. Запусти `npm run verify`.
 
 ## Как добавить семинар
 
-То же самое в `src/content/seminars/` по образцу `_example-seminar/`. Обязательные поля:
-`title`, `status`, `format`, `summary`. Необязательные: `level`, `duration`, `start`, `end`
+То же самое в `src/content/seminars/` по образцу `_example-seminar/`. Всегда обязательны: `title`, `status`,
+`direction`; для публикации ещё `format`, `summary`. Необязательные: `titleDe`, `level`, `duration`, `start`, `end`
 (только вместе со `start` и не раньше него), `price`, `order`, `cover` + `coverAlt`, `seo`.
+
+## Подразделы обучения
+
+- Подразделы — `src/data/directions.yaml` (ключ = значение `direction`), страницы — `/deutsche-grammatik/`,
+  `/berufseinstieg/` (общий шаблон `src/components/learning/DirectionPage.astro`).
+- В шапке каждого подраздела — заметная ссылка на пробный видеоурок. Пока `video.href: null`, это муляж,
+  ведущий к месту видео на странице (`#probeurok`). Готовое видео — ссылка `https://` на площадку; встраивание
+  плеера — только после решения по DSGVO.
+- Подраздел со `status: preparing` показывает «Программа в подготовке».
 
 ## Изменение и снятие с публикации
 

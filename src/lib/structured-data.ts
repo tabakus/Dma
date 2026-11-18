@@ -12,7 +12,7 @@ export function productJsonLd(product: Product, url: string): Record<string, unk
       '@context': 'https://schema.org',
       '@type': 'Course',
       name: d.title,
-      description: d.summary,
+      ...(d.summary && { description: d.summary }),
       url,
       ...(offers && { offers }),
     };
@@ -21,7 +21,7 @@ export function productJsonLd(product: Product, url: string): Record<string, unk
     '@context': 'https://schema.org',
     '@type': 'EducationEvent',
     name: d.title,
-    description: d.summary,
+    ...(d.summary && { description: d.summary }),
     url,
     ...(d.start && { startDate: isoDate(d.start) }),
     ...('end' in d && d.end && { endDate: isoDate(d.end) }),

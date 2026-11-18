@@ -3,7 +3,9 @@
 # Новый семинар: скопируйте папку без «_» и заполните поля реальными данными.
 # У семинара уровень и продолжительность необязательны.
 title: "ОБРАЗЕЦ — название семинара"
-status: draft            # draft | published | archived
+status: draft            # draft | announced | published | archived
+direction: grammatik     # подраздел: grammatik | beruf (src/data/directions.yaml)
+# titleDe: "ОБРАЗЕЦ — название по-немецки"
 order: 100
 format: "ОБРАЗЕЦ — формат"
 summary: "ОБРАЗЕЦ — краткое описание для карточки каталога и meta description."

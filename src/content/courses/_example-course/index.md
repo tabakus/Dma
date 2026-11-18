@@ -4,7 +4,9 @@
 # Новый курс: скопируйте папку без «_» (например, grammatik-b1/) и заполните поля реальными данными.
 # Поля без данных удаляйте, а не заполняйте выдуманными значениями.
 title: "ОБРАЗЕЦ — название курса"
-status: draft            # draft | published | archived
+status: draft            # draft | announced | published | archived
+direction: grammatik     # подраздел: grammatik | beruf (src/data/directions.yaml)
+# titleDe: "ОБРАЗЕЦ — название по-немецки"
 order: 100               # порядок в каталоге: меньше — выше
 level: [A2, B1]          # обязательно для курса: A1 A2 B1 B2 C1 C2
 format: "ОБРАЗЕЦ — формат занятий"

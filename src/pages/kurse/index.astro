@@ -1,10 +1,10 @@
 ---
-/** Каталог: все опубликованные продукты раздела. Технический каркас. */
+/** Каталог: все опубликованные и анонсированные продукты раздела (все подразделы). Технический каркас. */
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ProductGrid from '../../components/catalog/ProductGrid.astro';
-import { getPublishedCourses } from '../../lib/products';
+import { getListedCourses } from '../../lib/products';
 
-const products = await getPublishedCourses();
+const products = await getListedCourses();
 ---
 
 <BaseLayout title="Курсы">

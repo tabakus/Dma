@@ -18,8 +18,7 @@ const end = 'end' in d ? d.end : undefined;
 
 <dl class="product-facts">
   {d.level && <><dt>Уровень</dt><dd>{d.level.join(' – ')}</dd></>}
-  <dt>Формат</dt>
-  <dd>{d.format}</dd>
+  {d.format && <><dt>Формат</dt><dd>{d.format}</dd></>}
   {d.duration && <><dt>Продолжительность</dt><dd>{d.duration}</dd></>}
   {
     d.start && (

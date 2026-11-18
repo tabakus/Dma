@@ -11,6 +11,7 @@ const seminar = seminarSchema(image);
 const validCourse = {
   title: 'Kurs',
   status: 'published',
+  direction: 'grammatik',
   level: ['A2', 'B1'],
   format: 'Online',
   duration: '8 Wochen',
@@ -23,7 +24,7 @@ test('курс: корректные данные, значения по умо�
   assert.equal(r.currency, 'EUR');
 });
 
-test('курс: уровень и продолжительность обязательны', () => {
+test('опубликованный курс: уровень и продолжительность обязательны', () => {
   const r = course.safeParse({ ...validCourse, level: undefined, duration: undefined });
   assert.ok(!r.success);
   const paths = r.error.issues.map((i) => i.path.join('.'));
@@ -59,7 +60,7 @@ test('обложка без описания (coverAlt) отклоняется',
 });
 
 test('семинар: end без start и end раньше start отклоняются', () => {
-  const base = { title: 'S', status: 'draft', format: 'Online', summary: 'K' };
+  const base = { title: 'S', status: 'draft', direction: 'grammatik', format: 'Online', summary: 'K' };
   assert.ok(!seminar.safeParse({ ...base, end: '2027-01-02' }).success);
   assert.ok(!seminar.safeParse({ ...base, start: '2027-01-03', end: '2027-01-02' }).success);
   assert.ok(seminar.safeParse({ ...base, start: '2027-01-02', end: '2027-01-03' }).success);
@@ -110,4 +111,37 @@ test('настройки: headerCta необязательна и проверя
   assert.ok(siteSchema.safeParse(base).success);
   assert.ok(siteSchema.safeParse({ ...base, headerCta: { label: 'Оставить заявку', href: '/#obuchenie' } }).success);
   assert.ok(!siteSchema.safeParse({ ...base, headerCta: { label: 'x', href: 'mailto:a@b.de' } }).success);
+});
+
+// --- Черновики, анонсы, подразделы ------------------------------------------------------------
+import { directionSchema } from '../src/lib/schemas.ts';
+
+test('анонс и черновик можно завести без данных (только название, статус, подраздел)', () => {
+  for (const status of ['draft', 'announced']) {
+    assert.ok(course.safeParse({ title: 'Zeitformen', status, direction: 'grammatik' }).success, `course ${status}`);
+    assert.ok(seminar.safeParse({ title: 'zu + Infinitiv', status, direction: 'grammatik' }).success, `seminar ${status}`);
+  }
+});
+
+test('публикация требует данных: курс — format, summary, level, duration; семинар — format, summary', () => {
+  const c = course.safeParse({ title: 'K', status: 'published', direction: 'grammatik' });
+  assert.ok(!c.success);
+  assert.deepEqual(c.error.issues.map((i) => i.path.join('.')).sort(), ['duration', 'format', 'level', 'summary']);
+  const s = seminar.safeParse({ title: 'S', status: 'published', direction: 'grammatik' });
+  assert.ok(!s.success);
+  assert.deepEqual(s.error.issues.map((i) => i.path.join('.')).sort(), ['format', 'summary']);
+});
+
+test('подраздел обязателен и только из списка', () => {
+  assert.ok(!course.safeParse({ title: 'K', status: 'draft' }).success);
+  assert.ok(!course.safeParse({ title: 'K', status: 'draft', direction: 'mathe' }).success);
+});
+
+test('подраздел: видео без ссылки — муляж; ссылка только https', () => {
+  const base = { title: 'Deutsche Grammatik', path: '/deutsche-grammatik/', status: 'active', video: { label: 'Пробный видеоурок', href: null, placeholder: 'Скоро' } };
+  assert.ok(directionSchema.safeParse(base).success);
+  assert.ok(directionSchema.safeParse({ ...base, video: { ...base.video, href: 'https://example.org/v' } }).success);
+  assert.ok(!directionSchema.safeParse({ ...base, video: { ...base.video, href: 'javascript:alert(1)' } }).success);
+  assert.ok(!directionSchema.safeParse({ ...base, video: { ...base.video, href: 'http://example.org/v' } }).success);
+  assert.ok(!directionSchema.safeParse({ ...base, path: 'deutsche-grammatik' }).success);
 });

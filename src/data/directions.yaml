@@ -1,0 +1,28 @@
+# Подразделы раздела «Обучение». Ключ записи (grammatik, beruf) = значение поля direction у курсов и семинаров.
+# Схема полей: src/lib/schemas.ts → directionSchema.
+# Происхождение текстов: [материалы] — от владельца; [предложение] — формулировка Claude на согласование.
+
+grammatik:
+  title: "Deutsche Grammatik"                                   # [материалы]
+  subtitle: "Немецкая грамматика"                                # [предложение]
+  path: /deutsche-grammatik/
+  order: 10
+  status: active
+  lead: "Курсы по большим грамматическим темам и семинары по отдельным конструкциям."   # [предложение]
+  formatsTitle: "Два формата — одна система"                    # [материалы]
+  video:
+    label: "Пробный видеоурок"                                   # [материалы]
+    href: null                                                   # видеоурок пока не готов — показывается муляж
+    placeholder: "Пробный видеоурок появится здесь"
+
+beruf:
+  title: "Sprachkurse für den Berufseinstieg"                   # [материалы]
+  subtitle: "Языковые курсы для начала карьеры"                  # [предложение]
+  path: /berufseinstieg/
+  order: 20
+  status: preparing
+  preparingText: "Программа в подготовке"                        # [предложение]
+  video:
+    label: "Пробный видеоурок"
+    href: null
+    placeholder: "Пробный видеоурок появится здесь"

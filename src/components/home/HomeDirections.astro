@@ -1,64 +1,65 @@
 ---
 /**
- * Два направления обучения (якорь #obuchenie). Тексты — home.yaml → directions.
- * Курс — структура (сетка модулей, квадрат); семинар — фокус на одной теме (круг).
- * Обе карточки белые: тип показывают метка, форма и графика, а не цвет фона (бренд-система v1.1).
+ * Раздел «Обучение» на главной (якорь #obuchenie). Заголовок — home.yaml → directions;
+ * подразделы — src/data/directions.yaml, курсы и семинары — по полю direction.
+ * Активный подраздел показывает колонки «Курсы» и «Семинары», подраздел в подготовке — короткую карточку.
+ * В шапке каждого подраздела — заметная ссылка на пробный видеоурок.
  */
+import ProductColumns from '../learning/ProductColumns.astro';
+import TrialVideoLink from '../learning/TrialVideoLink.astro';
+import { getDirections, withProducts } from '../../lib/directions';
 import type { HomeContent } from '../../lib/site';
 
 interface Props {
   directions: NonNullable<HomeContent['directions']>;
 }
-const { directions: d } = Astro.props;
-const cards = [
-  { kind: 'course', ...d.courses },
-  { kind: 'seminar', ...d.seminars },
-] as const;
+const { directions: head } = Astro.props;
+const items = await Promise.all((await getDirections()).map(withProducts));
 ---
 
 <section class="directions" id="obuchenie" aria-labelledby="directions-title">
   <div class="container">
     <div class="head">
-      {d.eyebrow && <p class="eyebrow">{d.eyebrow}</p>}
-      <h2 id="directions-title">{d.title}</h2>
-      {d.intro && <p class="intro">{d.intro}</p>}
+      {head.eyebrow && <p class="eyebrow">{head.eyebrow}</p>}
+      <h2 id="directions-title">{head.title}</h2>
+      {head.intro && <p class="intro">{head.intro}</p>}
     </div>
 
-    <div class="cards">
+    <div class="list">
       {
-        cards.map((c) => (
-          <article class:list={['card', c.kind]} aria-labelledby={`dir-${c.kind}`}>
-            <div class="art" aria-hidden="true">
-              {c.kind === 'course' ? (
-                <div class="grid9">
-                  <i /><i /><i /><i /><i /><i /><i /><i /><b />
+        items.map(({ direction, courses, seminars }) => {
+          const d = direction.data;
+          return (
+            <article class:list={['panel', d.status]} aria-labelledby={`dir-${direction.id}`}>
+              <header class="panel-head">
+                <div class="titles">
+                  <h3 id={`dir-${direction.id}`} lang="de">
+                    <a href={d.path}>{d.title}</a>
+                  </h3>
+                  {d.subtitle && <p class="subtitle">{d.subtitle}</p>}
                 </div>
+                <TrialVideoLink direction={direction} />
+              </header>
+
+              {d.status === 'active' ? (
+                <>
+                  {d.lead && <p class="lead">{d.lead}</p>}
+                  <ProductColumns courses={courses} seminars={seminars} title={d.formatsTitle} headingLevel={3} />
+                  <a class="btn btn-secondary more" href={d.path}>
+                    Подробнее о направлении <span aria-hidden="true">→</span>
+                  </a>
+                </>
               ) : (
-                <div class="focus">
-                  <b />
+                <div class="prep-body">
+                  <p>{d.preparingText ?? 'Программа в подготовке'}</p>
+                  <a class="link" href={d.path}>
+                    Страница направления <span aria-hidden="true">→</span>
+                  </a>
                 </div>
               )}
-            </div>
-            <div class="body">
-              <p class="type">
-                <span class="mark" aria-hidden="true" />
-                {c.kind === 'course' ? 'Курс' : 'Семинар'}
-              </p>
-              <h3 id={`dir-${c.kind}`}>{c.title}</h3>
-              <p class="text">{c.text}</p>
-              {c.points.length > 0 && (
-                <ul class="points">
-                  {c.points.map((p) => (
-                    <li>{p}</li>
-                  ))}
-                </ul>
-              )}
-              <a class="btn btn-secondary" href={c.link.href}>
-                {c.link.label} <span aria-hidden="true">→</span>
-              </a>
-            </div>
-          </article>
-        ))
+            </article>
+          );
+        })
       }
     </div>
   </div>
@@ -74,106 +75,57 @@ const cards = [
   .head .eyebrow, .head h2, .intro { margin: 0; }
   .intro { color: var(--color-muted); font-size: var(--text-lead); line-height: var(--leading-lead); }
 
-  .cards {
-    display: grid;
-    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-    gap: clamp(1rem, 0.5rem + 1.5vw, 1.75rem);
-    align-items: stretch;
-  }
-  .card {
+  .list { display: grid; gap: clamp(1rem, 0.5rem + 1.5vw, 1.75rem); }
+  .panel {
     position: relative;
     display: grid;
-    grid-template-rows: auto 1fr;
+    gap: var(--space-4);
+    padding: clamp(1.5rem, 1rem + 2vw, 3rem);
     background: var(--color-surface);
     border: 1px solid var(--color-line);
     border-radius: calc(var(--radius) * 2);
     overflow: hidden;
-    transition: transform 0.2s, box-shadow 0.2s;
   }
-  .card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 24px 40px -32px color-mix(in srgb, var(--color-ink) 55%, transparent);
-  }
-  .body { display: grid; gap: var(--space-3); align-content: start; padding: clamp(1.5rem, 1rem + 1.5vw, 2.5rem); }
-  .body > * { margin: 0; }
-  .type {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.55rem;
-    font-size: var(--text-label);
-    font-weight: var(--weight-semibold);
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
-    color: var(--color-muted);
-  }
-  .mark { width: 0.8rem; height: 0.8rem; }
-  .course .mark { background: var(--color-graphite); border-radius: 2px; }
-  .seminar .mark { background: var(--color-accent); border-radius: 50%; }
-  .text { color: var(--color-muted); max-width: 44ch; }
-  .points { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; padding: 0; }
-  .points li {
-    padding: 0.45rem 0.8rem;
-    border-radius: 999px;
-    background: var(--color-bg);
-    font-size: var(--text-caption);
-    font-weight: var(--weight-medium);
-  }
-  .body .btn { justify-self: start; margin-top: var(--space-2); }
-
-  /* ---------- Графика карточек ---------- */
-  .art {
-    height: clamp(9rem, 6rem + 8vw, 13rem);
-    border-bottom: 1px solid var(--color-line);
-    display: grid;
-    align-items: center;
-    padding-inline: clamp(1.5rem, 1rem + 1.5vw, 2.5rem);
-  }
-  .course .art { background: var(--color-bg); }
-  .grid9 {
-    display: grid;
-    grid-template-columns: repeat(9, 1fr);
-    gap: 0.6rem;
-    width: min(100%, 30rem);
-  }
-  .grid9 i, .grid9 b { aspect-ratio: 1; border-radius: 3px; }
-  .grid9 i { background: var(--color-graphite); }
-  .grid9 i:nth-child(even) { background: var(--color-surface); border: 1px solid var(--color-line); }
-  .grid9 i:nth-child(3n) { background: var(--color-sand); border: 0; }
-  .grid9 b { background: var(--color-accent); border-radius: 50%; translate: 25% -25%; }
-
-  .seminar .art { background: var(--color-mist); overflow: hidden; position: relative; }
-  .focus { position: relative; height: 100%; }
-  .focus b {
+  /* фирменная геометрия в углу активного подраздела: модули и круг */
+  .panel.active::before {
+    content: '';
     position: absolute;
-    right: -2rem;
-    top: 50%;
-    width: clamp(9rem, 6rem + 9vw, 14rem);
+    top: -3.5rem;
+    right: -3.5rem;
+    width: 9rem;
     aspect-ratio: 1;
     border-radius: 50%;
     background: var(--color-accent);
-    translate: 0 -50%;
+    opacity: 0.12;
+    pointer-events: none;
   }
-  .focus::before {
-    /* один модуль — одна тема */
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    width: clamp(2.5rem, 2rem + 1.5vw, 3.5rem);
-    aspect-ratio: 1;
-    border-radius: 4px;
-    background: var(--color-graphite);
-    translate: 0 -50%;
+  .panel-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3) var(--space-4);
+    position: relative;
   }
+  .titles { display: grid; gap: 0.35rem; }
+  .titles h3 {
+    margin: 0;
+    font-size: var(--text-h2);
+    line-height: var(--leading-h2);
+    letter-spacing: var(--tracking-h2);
+  }
+  .titles h3 a { color: var(--color-text); text-decoration: none; }
+  .titles h3 a:hover { color: var(--color-link); }
+  .subtitle { margin: 0; color: var(--color-muted); font-weight: var(--weight-medium); }
+  .lead { margin: 0; max-width: 46rem; color: var(--color-muted); }
+  .more { justify-self: start; }
 
-  @media (max-width: 52rem) {
-    .cards { grid-template-columns: 1fr; }
-  }
+  .prep-body { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3); padding-top: var(--space-3); border-top: 1px solid var(--color-line); }
+  .prep-body p { margin: 0; color: var(--color-muted); font-size: var(--text-lead); }
+  .link { font-weight: var(--weight-semibold); text-decoration: none; }
+  .link:hover { text-decoration: underline; }
+
   @media (max-width: 30rem) {
-    .body .btn { justify-self: stretch; }
-    .grid9 { gap: 0.4rem; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .card:hover { transform: none; }
+    .more { justify-self: stretch; }
   }
 </style>
