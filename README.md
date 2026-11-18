@@ -60,9 +60,9 @@ src/
     courses/<папка>/index.md   один курс = одна папка (+ изображения рядом)
     seminars/<папка>/index.md
     pages/*.md                 Impressum, Datenschutz и др.
-  data/               site.yaml (настройки, меню, тексты формы), home.yaml (главная)
+  data/               site.yaml (настройки, меню, тексты формы), home.yaml (главная), directions.yaml (подразделы обучения)
   content.config.ts   подключение коллекций и схем
-  components/         ДИЗАЙН: brand/ layout/ catalog/ product/ forms/ home/ (секции главной)
+  components/         ДИЗАЙН: brand/ layout/ catalog/ product/ forms/ home/ (секции главной) learning/ (подразделы)
   layouts/            BaseLayout: <head>, SEO, шапка, подвал
   styles/             tokens.css (цвета, шрифт, шкала), global.css
   assets/brand/       исходные SVG утверждённого логотипа

@@ -7,7 +7,7 @@
  */
 import { defineCollection } from 'astro:content';
 import { file, glob } from 'astro/loaders';
-import { courseSchema, homeSchema, pageSchema, seminarSchema, siteSchema } from './lib/schemas';
+import { courseSchema, directionSchema, homeSchema, pageSchema, seminarSchema, siteSchema } from './lib/schemas';
 
 const folderId = ({ entry }: { entry: string }) => entry.replace(/\/index\.md$/, '');
 
@@ -36,4 +36,9 @@ const home = defineCollection({
   schema: homeSchema,
 });
 
-export const collections = { courses, seminars, pages, site, home };
+const directions = defineCollection({
+  loader: file('src/data/directions.yaml'),
+  schema: directionSchema,
+});
+
+export const collections = { courses, seminars, pages, site, home, directions };

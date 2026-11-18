@@ -40,7 +40,9 @@ npm при разрешении зависимостей, а встроенны�
 - Схемы строгие: лишние или неверно названные поля — ошибка сборки.
 - Курс: обязательны `level`, `format`, `duration`. Семинар: обязателен `format`, `level`/`duration`
   необязательны, `end` только вместе со `start` и не раньше него.
-- Видимость: `status: published` и папка не начинается с `_` (`src/lib/products.ts → isVisible`).
+- Видимость (`src/lib/products.ts`): страница, каталог для формы и sitemap — только `status: published`
+  (`isVisible`); списки подразделов и каталогов — ещё и `announced` с пометкой «Скоро» (`isListed`).
+  Папки с `_` не видны нигде. Поле `direction` относит продукт к подразделу.
   `draft`/`archived` не получают страниц, не попадают в каталог, sitemap и `/products.json`.
 
 ## Маршруты
@@ -50,6 +52,7 @@ npm при разрешении зависимостей, а встроенны�
 | `/` | `src/pages/index.astro` | Технический каркас главной |
 | `/kurse/`, `/kurse/<папка>/` | `src/pages/kurse/` | Каталог и страницы курсов |
 | `/seminare/`, `/seminare/<папка>/` | `src/pages/seminare/` | Каталог и страницы семинаров |
+| `/deutsche-grammatik/`, `/berufseinstieg/` | `src/pages/<подраздел>/index.astro` | Подразделы обучения (данные — `src/data/directions.yaml`) |
 | `/<страница>/` | `src/pages/[page].astro` | Опубликованные `src/content/pages/*.md` |
 | `/anfrage/danke/`, `/anfrage/fehler/` | `src/pages/anfrage/` | Ответ формы без JavaScript, `noindex` |
 | `/products.json` | `src/pages/products.json.ts` | Опубликованные продукты для сервера |

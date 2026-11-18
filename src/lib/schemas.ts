@@ -6,8 +6,20 @@
  */
 import { z } from 'astro/zod';
 
-/** Статус публикации. Только `published` попадает на сайт. */
+/** Статус публикации страницы. Только `published` попадает на сайт. */
 export const STATUSES = ['draft', 'published', 'archived'] as const;
+
+/**
+ * Статус курса или семинара:
+ * - draft — черновик, на сайте не виден;
+ * - announced — анонс: название видно в списках с пометкой «Скоро», страницы и заявки нет;
+ * - published — опубликован: своя страница с формой заявки;
+ * - archived — снят с публикации.
+ */
+export const PRODUCT_STATUSES = ['draft', 'announced', 'published', 'archived'] as const;
+
+/** Подразделы раздела «Обучение» (id записей в src/data/directions.yaml). */
+export const DIRECTIONS = ['grammatik', 'beruf'] as const;
 
 /** Уровни по шкале CEFR. */
 export const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as const;
@@ -34,15 +46,23 @@ const seo = z
   })
   .optional();
 
-/** Поля, общие для курсов и семинаров. */
+/**
+ * Поля, общие для курсов и семинаров.
+ * format и summary обязательны только для опубликованных продуктов (проверка — в publishedRequires):
+ * черновик и анонс можно завести без данных, ничего не выдумывая.
+ */
 function productBase(image: ImageFn) {
   return {
     title: nonEmpty(120),
-    status: z.enum(STATUSES),
+    /** Название на немецком (показывается рядом с русским). */
+    titleDe: nonEmpty(120).optional(),
+    status: z.enum(PRODUCT_STATUSES),
+    /** Подраздел обучения: grammatik — Deutsche Grammatik, beruf — Sprachkurse für den Berufseinstieg. */
+    direction: z.enum(DIRECTIONS),
     /** Порядок в каталоге: меньше — выше. */
     order: z.number().int().min(0).default(100),
-    format: nonEmpty(80),
-    summary: nonEmpty(300),
+    format: nonEmpty(80).optional(),
+    summary: nonEmpty(300).optional(),
     price: price.optional(),
     currency: z.literal('EUR').default('EUR'),
     cover: image().optional(),
@@ -58,22 +78,39 @@ function requireCoverAlt<T extends { cover?: unknown; coverAlt?: string }>(data:
   }
 }
 
+/** Для опубликованного продукта перечисленные поля обязательны. */
+function publishedRequires<T extends Record<string, unknown> & { status: string }>(
+  data: T,
+  ctx: z.RefinementCtx,
+  fields: readonly (keyof T & string)[],
+) {
+  if (data.status !== 'published') return;
+  for (const f of fields) {
+    if (data[f] === undefined) {
+      ctx.addIssue({ code: 'custom', path: [f], message: `Для публикации (status: published) нужно поле ${f}` });
+    }
+  }
+}
+
 /**
- * Курс: длительная программа. Уровень, формат и продолжительность обязательны.
+ * Курс: длительная программа. Для публикации обязательны уровень, формат, продолжительность и описание.
  */
 export function courseSchema(image: ImageFn) {
   return z
     .strictObject({
       ...productBase(image),
-      level: z.array(z.enum(LEVELS)).min(1),
-      duration: nonEmpty(80),
+      level: z.array(z.enum(LEVELS)).min(1).optional(),
+      duration: nonEmpty(80).optional(),
       start: date.optional(),
     })
-    .superRefine(requireCoverAlt);
+    .superRefine((data, ctx) => {
+      requireCoverAlt(data, ctx);
+      publishedRequires(data, ctx, ['format', 'summary', 'level', 'duration']);
+    });
 }
 
 /**
- * Семинар: тематическое занятие. Уровень и продолжительность необязательны.
+ * Семинар: тематическое занятие. Для публикации обязательны формат и описание; уровень и продолжительность — нет.
  * Если указан конец (end), он не может быть раньше начала (start).
  */
 export function seminarSchema(image: ImageFn) {
@@ -87,6 +124,7 @@ export function seminarSchema(image: ImageFn) {
     })
     .superRefine((data, ctx) => {
       requireCoverAlt(data, ctx);
+      publishedRequires(data, ctx, ['format', 'summary']);
       if (data.end && !data.start) {
         ctx.addIssue({ code: 'custom', path: ['start'], message: 'Если указан end, нужен и start' });
       }
@@ -166,13 +204,14 @@ export const homeSchema = z.strictObject({
     lead: nonEmpty(300).nullable(),
     primaryCta: link.optional(),
     secondaryLinks: z.array(link).max(3).default([]),
+    /** Описание фотографии первого экрана для экранных читалок. */
+    imageAlt: nonEmpty(200).optional(),
   }),
+  /** Раздел «Обучение» на главной: заголовок; подразделы — src/data/directions.yaml. */
   directions: z
     .strictObject({
       ...sectionHead,
       intro: textBlock(300).optional(),
-      courses: z.strictObject({ title: nonEmpty(60), text: textBlock(400), points: z.array(nonEmpty(80)).max(5), link }),
-      seminars: z.strictObject({ title: nonEmpty(60), text: textBlock(400), points: z.array(nonEmpty(80)).max(5), link }),
     })
     .optional(),
   philosophy: z
@@ -214,4 +253,31 @@ export const homeSchema = z.strictObject({
       links: z.array(link).max(3).default([]),
     })
     .optional(),
+});
+
+/**
+ * Подраздел обучения: src/data/directions.yaml, ключ = id подраздела (grammatik, beruf).
+ * Страница подраздела, блок на главной, колонки «Курсы» и «Семинары», ссылка на пробный видеоурок.
+ */
+export const directionSchema = z.strictObject({
+  /** Название (на немецком, как на сайте). */
+  title: nonEmpty(80),
+  /** Пояснение на русском под названием. */
+  subtitle: nonEmpty(120).optional(),
+  /** Адрес страницы подраздела. */
+  path: z.string().regex(/^\/[a-z0-9-]+\/$/, 'Адрес вида /deutsche-grammatik/'),
+  order: z.number().int().min(0).default(100),
+  /** active — есть программа; preparing — подраздел в подготовке. */
+  status: z.enum(['active', 'preparing']),
+  lead: textBlock(300).optional(),
+  /** Фраза над колонками курсов и семинаров, например «Два формата — одна система». */
+  formatsTitle: nonEmpty(80).optional(),
+  /** Текст для подраздела в подготовке. */
+  preparingText: nonEmpty(200).optional(),
+  /** Пробный видеоурок. Пока href = null, показывается муляж с пометкой «скоро». */
+  video: z.strictObject({
+    label: nonEmpty(60),
+    href: z.url({ protocol: /^https$/ }).nullable(),
+    placeholder: nonEmpty(120),
+  }),
 });

@@ -1,6 +1,6 @@
 ---
 import type { Product } from '../../lib/products';
-import { productUrl } from '../../lib/products';
+import { hasPage, productUrl } from '../../lib/products';
 import ProductFacts from '../product/ProductFacts.astro';
 
 interface Props {
@@ -10,7 +10,16 @@ const { product } = Astro.props;
 ---
 
 <article class="product-card">
-  <h3><a href={productUrl(product)}>{product.data.title}</a></h3>
-  <p>{product.data.summary}</p>
-  <ProductFacts product={product} />
+  <h3>
+    {hasPage(product) ? <a href={productUrl(product)}>{product.data.title}</a> : product.data.title}
+  </h3>
+  {product.data.titleDe && <p lang="de">{product.data.titleDe}</p>}
+  {hasPage(product) ? (
+    <>
+      {product.data.summary && <p>{product.data.summary}</p>}
+      <ProductFacts product={product} />
+    </>
+  ) : (
+    <p class="soon">Скоро</p>
+  )}
 </article>
