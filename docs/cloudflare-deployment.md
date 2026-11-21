@@ -142,8 +142,6 @@ production-ветка `main`. Технический каркас доступе
 | --- | --- | --- |
 | SMTP-переменные (раздел 5) | SMTP-провайдер, адреса отправителя и получателя | В-1…В-3 |
 | Проверка реальной отправки | То же | В-11, `docs/smtp.md` |
-| `ALLOWED_ORIGINS` для production и `SITE_URL` | Регистрация и подключение домена `deutschmitakzent.de` | В-4 |
-| Custom domain в Cloudflare Pages | То же | В-4 |
 | KV `APPLICATION_KV` и правило Rate Limiting | Отдельное решение (не подключать без согласования) | В-5 |
 | Публикация Impressum, Datenschutzerklärung, текста согласия | Тексты от специалиста | В-6…В-8 |
 | Исправление П-2, П-3 (по желанию) | Согласование изменения кода | В-20 |
@@ -198,8 +196,9 @@ production-ветка `main`. Технический каркас доступе
 
 1. Слияние проверенного Pull Request в `main` → автоматический production-деплой.
 2. Задать переменные **Production** (раздел 5).
-3. После регистрации домена: **Custom domains** → добавить `deutschmitakzent.de`, дождаться
-   сертификата; добавить домен в `ALLOWED_ORIGINS` (Production); при необходимости задать `SITE_URL`.
+3. Домен подключён (21.11.2026): регистратор INWX, nameserver Cloudflare; в **Custom domains** — `deutschmitakzent.de`
+   и `www.deutschmitakzent.de`; Redirect Rule `www` → основной адрес (301); `ALLOWED_ORIGINS` (Production) = `https://deutschmitakzent.de`.
+   DNSSEC пока не включён (можно включить в Cloudflare и внести DS-запись в INWX).
 4. Повторить проверки этапов А и Б на production-адресе.
 5. Откат: **Deployments** → предыдущий деплой → **Rollback to this deployment**.
 

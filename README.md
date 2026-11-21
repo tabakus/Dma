@@ -4,13 +4,13 @@
 форма заявки с отправкой на почту преподавателя.
 
 > **Статус:** технический каркас (этап 1). Дизайна и готовых страниц пока нет.
-> Технический каркас развёрнут на Cloudflare Pages: https://deutschmitakzent.pages.dev (домен не подключён).
+> Технический каркас развёрнут на Cloudflare Pages: https://deutschmitakzent.de (также https://deutschmitakzent.pages.dev).
 > Отправка заявок не настроена (нет SMTP-реквизитов).
 > Нерешённые вопросы — в [docs/open-questions.md](docs/open-questions.md).
 
 - Репозиторий: [github.com/tabakus/dma](https://github.com/tabakus/dma), основная ветка `main`.
 - Язык первой версии сайта — русский (`locale: ru` в `src/data/site.yaml`).
-- Основной домен — `deutschmitakzent.de`; регистрация и настройка не подтверждены.
+- Основной домен — `deutschmitakzent.de` (регистратор INWX, DNS в Cloudflare; подключён 21.11.2026). `www` перенаправляется на основной адрес.
 
 ## Стек
 
