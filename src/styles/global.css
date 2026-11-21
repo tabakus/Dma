@@ -55,7 +55,45 @@ main:not(.full-bleed) {
 /* Honeypot формы: убран из потока и от экранных читалок, но остаётся в DOM. */
 .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 
-.field-error { color: var(--color-error); margin: var(--space-1) 0 0; min-height: 1lh; }
+/* ---------- Форма заявки ---------- */
+.application h2 { margin: 0 0 var(--space-4); font-size: var(--text-h3); line-height: var(--leading-h3); }
+.application-form { display: grid; gap: var(--space-2); }
+.application-form .field { display: grid; gap: 0.35rem; }
+.application-form label { font-size: var(--text-small); font-weight: var(--weight-medium); }
+.application-form .optional { color: var(--color-muted); font-weight: var(--weight-regular); }
+.application-form input:not([type='checkbox']):not([type='hidden']),
+.application-form textarea {
+  width: 100%;
+  min-height: var(--tap-min);
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--color-input-border);
+  border-radius: var(--radius);
+  background: var(--color-input-bg);
+  color: var(--color-text);
+  font: inherit;
+}
+.application-form textarea { resize: vertical; }
+.application-form input:focus-visible, .application-form textarea:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 1px; border-color: var(--color-focus); }
+.application-form .field-consent { grid-template-columns: auto 1fr; align-items: start; column-gap: 0.75rem; }
+.application-form .field-consent input { width: 1.25rem; height: 1.25rem; margin: 0.15rem 0 0; accent-color: var(--color-gold); }
+.application-form .field-consent .field-error { grid-column: 1 / -1; }
+.application-form button[type='submit'] {
+  justify-self: start;
+  min-height: var(--tap-min);
+  padding: 0 1.6rem;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--color-button-bg);
+  color: var(--color-button-text);
+  font: var(--weight-semibold) var(--text-ui) / var(--leading-ui) var(--font-body);
+  cursor: pointer;
+}
+.application-form button[type='submit']:hover { background: var(--color-button-bg-hover); color: var(--color-button-text-hover); }
+.application-form button[disabled] { opacity: 0.7; cursor: progress; }
+.form-status:empty { display: none; }
+@media (max-width: 30rem) { .application-form button[type='submit'] { justify-self: stretch; } }
+
+.field-error { color: var(--color-error); margin: 0; font-size: var(--text-small); min-height: 1lh; }
 .application-form[data-state='success'] .form-status { color: var(--color-success); }
 .application-form[data-state='error'] .form-status { color: var(--color-error); }
 

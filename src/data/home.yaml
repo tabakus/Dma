@@ -16,13 +16,13 @@ content:
     primaryCta:
       label: "Выбрать обучение"                                                  # [предложение]
       href: /#obuchenie
-    secondaryLinks:
-      - label: "Курсы"
-        href: /kurse/
-      - label: "Семинары"
-        href: /seminare/
-    # Фото: Pexels (photo 8085255), лицензия Pexels; файл src/assets/home/hero-library.jpg
-    imageAlt: "Девушка в библиотеке задумалась над книгами и ноутбуком"     # [предложение]
+    secondaryLinks:                                                              # как в меню (21.11.2026)
+      - label: "Грамматика"
+        href: /deutsche-grammatik/
+      - label: "Старт карьеры"
+        href: /berufseinstieg/
+    # Фон первого экрана: src/assets/library/hero-reader*.jpg (сгенерировано владельцем)
+    imageAlt: "Девушка с ноутбуком и книгами задумалась в старинной библиотеке"     # [предложение]
 
   directions:
     eyebrow: "Обучение"
@@ -72,8 +72,8 @@ content:
   closing:
     title: "Dein Deutsch. Dein Weg. Dein Fortschritt."                          # слоган
     text: "Выберите формат, с которого удобно начать."                           # [предложение]
-    links:
-      - label: "Курсы"
-        href: /kurse/
-      - label: "Семинары"
-        href: /seminare/
+    links:                                                                       # как в меню (21.11.2026)
+      - label: "Грамматика"
+        href: /deutsche-grammatik/
+      - label: "Старт карьеры"
+        href: /berufseinstieg/

@@ -1,6 +1,6 @@
 ---
 import type { Product } from '../../lib/products';
-import ProductCard from './ProductCard.astro';
+import ProductTile from './ProductTile.astro';
 
 interface Props {
   products: Product[];
@@ -17,9 +17,20 @@ const { products, emptyText } = Astro.props;
     <ul class="product-grid">
       {products.map((p) => (
         <li>
-          <ProductCard product={p} />
+          <ProductTile product={p} />
         </li>
       ))}
     </ul>
   )
 }
+
+<style>
+  .product-grid {
+    list-style: none;
+    margin: 0 0 var(--section-space);
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+    gap: clamp(0.75rem, 0.5rem + 0.8vw, 1.25rem);
+  }
+</style>

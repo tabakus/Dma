@@ -63,6 +63,10 @@ function productBase(image: ImageFn) {
     order: z.number().int().min(0).default(100),
     format: nonEmpty(80).optional(),
     summary: nonEmpty(300).optional(),
+    /** Максимальный размер группы (человек): на карточке и странице — «до N человек». */
+    groupSize: z.number().int().min(1).max(100).optional(),
+    /** Расписание словами, например «вторник и четверг, 18:30–20:00». */
+    schedule: nonEmpty(120).optional(),
     price: price.optional(),
     currency: z.literal('EUR').default('EUR'),
     cover: image().optional(),
@@ -75,6 +79,16 @@ function productBase(image: ImageFn) {
 function requireCoverAlt<T extends { cover?: unknown; coverAlt?: string }>(data: T, ctx: z.RefinementCtx) {
   if (data.cover && !data.coverAlt) {
     ctx.addIssue({ code: 'custom', path: ['coverAlt'], message: 'Для обложки нужен coverAlt — описание изображения' });
+  }
+}
+
+/** Конец (end) — только вместе с началом (start) и не раньше него. */
+function startBeforeEnd(data: { start?: Date; end?: Date }, ctx: z.RefinementCtx) {
+  if (data.end && !data.start) {
+    ctx.addIssue({ code: 'custom', path: ['start'], message: 'Если указан end, нужен и start' });
+  }
+  if (data.start && data.end && data.end < data.start) {
+    ctx.addIssue({ code: 'custom', path: ['end'], message: 'end не может быть раньше start' });
   }
 }
 
@@ -94,6 +108,7 @@ function publishedRequires<T extends Record<string, unknown> & { status: string 
 
 /**
  * Курс: длительная программа. Для публикации обязательны уровень, формат, продолжительность и описание.
+ * Если указан конец (end), он не может быть раньше начала (start).
  */
 export function courseSchema(image: ImageFn) {
   return z
@@ -102,10 +117,12 @@ export function courseSchema(image: ImageFn) {
       level: z.array(z.enum(LEVELS)).min(1).optional(),
       duration: nonEmpty(80).optional(),
       start: date.optional(),
+      end: date.optional(),
     })
     .superRefine((data, ctx) => {
       requireCoverAlt(data, ctx);
       publishedRequires(data, ctx, ['format', 'summary', 'level', 'duration']);
+      startBeforeEnd(data, ctx);
     });
 }
 
@@ -125,12 +142,7 @@ export function seminarSchema(image: ImageFn) {
     .superRefine((data, ctx) => {
       requireCoverAlt(data, ctx);
       publishedRequires(data, ctx, ['format', 'summary']);
-      if (data.end && !data.start) {
-        ctx.addIssue({ code: 'custom', path: ['start'], message: 'Если указан end, нужен и start' });
-      }
-      if (data.start && data.end && data.end < data.start) {
-        ctx.addIssue({ code: 'custom', path: ['end'], message: 'end не может быть раньше start' });
-      }
+      startBeforeEnd(data, ctx);
     });
 }
 

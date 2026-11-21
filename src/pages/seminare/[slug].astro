@@ -1,14 +1,10 @@
 ---
 /**
  * Страница продукта. Генерируется для каждой опубликованной папки в src/content/seminars/.
- * Архивные и черновые продукты страниц не получают.
+ * Архивные, черновые и анонсированные продукты страниц не получают. Оформление — src/components/product/ProductPage.astro.
  */
-import { render } from 'astro:content';
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import ProductFacts from '../../components/product/ProductFacts.astro';
-import ApplicationForm from '../../components/forms/ApplicationForm.astro';
-import { getPublishedSeminars, productUrl, type Product } from '../../lib/products';
-import { productJsonLd } from '../../lib/structured-data';
+import ProductPage from '../../components/product/ProductPage.astro';
+import { getPublishedSeminars, type Product } from '../../lib/products';
 
 export async function getStaticPaths() {
   const products = await getPublishedSeminars();
@@ -18,24 +14,6 @@ export async function getStaticPaths() {
 interface Props {
   product: Product;
 }
-const { product } = Astro.props;
-const { Content } = await render(product);
-const d = product.data;
-const url = new URL(productUrl(product), Astro.site).href;
 ---
 
-<BaseLayout
-  title={d.seo?.title ?? d.title}
-  description={d.seo?.description ?? d.summary}
-  ogType="article"
-  ogImage={d.cover?.src}
-  jsonLd={productJsonLd(product, url)}
->
-  <article>
-    <h1>{d.title}</h1>
-    <p>{d.summary}</p>
-    <ProductFacts product={product} />
-    <Content />
-  </article>
-  <ApplicationForm productType="seminar" productSlug={product.id} productTitle={d.title} />
-</BaseLayout>
+<ProductPage product={Astro.props.product} />

@@ -11,6 +11,7 @@
 import { getDirections, withProducts } from '../../lib/directions';
 import shelves from '../../assets/library/shelves-bokeh.jpg';
 import PhotoBackdrop from '../brand/PhotoBackdrop.astro';
+import ArrowIcon from '../brand/ArrowIcon.astro';
 import type { HomeContent } from '../../lib/site';
 
 interface Props {
@@ -88,7 +89,7 @@ function countLine(courses: number, seminars: number): string | null {
                   )}
                   <span class="go">
                     <span class="visually-hidden">Перейти к направлению</span>
-                    <span aria-hidden="true">→</span>
+                    <ArrowIcon />
                   </span>
                 </span>
               </span>
@@ -211,8 +212,6 @@ function countLine(courses: number, seminars: number): string | null {
     border-radius: 50%;
     background: var(--color-button-bg);
     color: var(--color-button-text);
-    font-size: 1.35rem;
-    font-weight: var(--weight-bold);
     transition: transform 0.25s, background-color 0.2s, color 0.2s;
   }
   .card:hover .go { transform: translateX(4px); background: var(--color-button-bg-hover); color: var(--color-button-text-hover); }
