@@ -1,11 +1,12 @@
 ---
 /**
- * Шапка сайта (тёмная, полупрозрачная поверх фото): логотип для тёмного фона, основное меню и заметная кнопка (site.yaml → nav, headerCta).
+ * Шапка сайта (тёмная, полупрозрачная поверх фото): логотип для тёмного фона и слоган под ним (site.yaml → tagline), основное меню и заметная кнопка (site.yaml → nav, headerCta).
  * На узких экранах меню сворачивается в панель за кнопкой «Меню».
  * Без JavaScript меню остаётся раскрытым, чтобы все ссылки были доступны.
  */
 import Logo from '../brand/Logo.astro';
 import { getSiteSettings } from '../../lib/site';
+import { sentences } from '../../lib/text';
 
 const site = await getSiteSettings();
 const current = Astro.url.pathname;
@@ -20,7 +21,10 @@ const isCurrent = (href: string) => {
 
 <header class="site-header" data-nav>
   <div class="container bar">
-    <Logo variant="dark" />
+    <div class="brand">
+      <Logo variant="dark" />
+      {site.tagline && <p class="tagline">{sentences(site.tagline).map((line) => <span>{line}</span>)}</p>}
+    </div>
     <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu" data-nav-toggle hidden>
       <span class="menu-icon" aria-hidden="true"><i></i><i></i></span>
       <span>Меню</span>
@@ -60,6 +64,17 @@ const isCurrent = (href: string) => {
     justify-content: space-between;
     gap: var(--space-4);
     min-height: 4.5rem;
+  }
+  .brand { display: grid; gap: 0.3rem; padding-block: 0.6rem; min-width: 0; flex: 0 1 auto; }
+  .menu-toggle { flex: none; }
+  /* слоган — по предложению на строку */
+  .tagline span { display: block; }
+  .tagline {
+    margin: 0;
+    font-size: 0.75rem;
+    line-height: 1.3;
+    letter-spacing: 0.01em;
+    color: var(--color-gold-light);
   }
   .menu {
     display: flex;

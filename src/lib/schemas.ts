@@ -167,6 +167,8 @@ const link = z.strictObject({
 /** Глобальные настройки сайта: src/data/site.yaml, ключ `settings`. */
 export const siteSchema = z.strictObject({
   name: nonEmpty(80),
+  /** Слоган под логотипом в шапке (расшифровка «Akzent»); необязательный. */
+  tagline: nonEmpty(80).optional(),
   /** Язык сайта (атрибут lang), например ru или de. */
   locale: z.string().regex(/^[a-z]{2}(-[A-Z]{2})?$/),
   defaultDescription: nonEmpty(160),
