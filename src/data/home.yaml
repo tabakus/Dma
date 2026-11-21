@@ -21,8 +21,8 @@ content:
         href: /deutsche-grammatik/
       - label: "Старт карьеры"
         href: /berufseinstieg/
-    # Фото: Pexels (photo 8085255), лицензия Pexels; файл src/assets/home/hero-library.jpg
-    imageAlt: "Девушка в библиотеке задумалась над книгами и ноутбуком"     # [предложение]
+    # Фон первого экрана: src/assets/library/hero-reader*.jpg (сгенерировано владельцем)
+    imageAlt: "Девушка с ноутбуком и книгами задумалась в старинной библиотеке"     # [предложение]
 
   directions:
     eyebrow: "Обучение"

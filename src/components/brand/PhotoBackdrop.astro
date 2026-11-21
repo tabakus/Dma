@@ -1,6 +1,7 @@
 ---
 /**
- * Фоновая фотография секции (декоративная: alt="", скрыта от экранных читалок).
+ * Фоновая фотография секции. По умолчанию декоративная (alt="", скрыта от экранных читалок);
+ * если передан alt — изображение с описанием.
  * Занимает всю площадь родителя (у родителя — position: relative; isolation: isolate).
  * Для телефона можно передать отдельный вертикальный кадр (mobile), он выбирается по ширине экрана.
  * Кадрирование (object-position) секция задаёт своим классом: .my-bg :global(img) { object-position: … }.
@@ -16,9 +17,11 @@ interface Props {
   mobile?: ImageMetadata;
   /** Первый экран — eager, остальные — lazy. */
   eager?: boolean;
+  /** Описание, если фото несёт смысл (например, человек на первом экране). Без alt фото декоративное. */
+  alt?: string;
   class?: string;
 }
-const { src, mobile, eager = false, class: className } = Astro.props;
+const { src, mobile, eager = false, alt, class: className } = Astro.props;
 
 const widths = [640, 960, 1280, 1600, 1920].filter((w) => w <= src.width * 1.5);
 const main = await getImage({ src, widths, sizes: '100vw', format: 'webp', quality: 78 });
@@ -27,12 +30,12 @@ const small = mobile
   : null;
 ---
 
-<picture class:list={['backdrop', className]} aria-hidden="true">
+<picture class:list={['backdrop', className]} aria-hidden={alt ? undefined : 'true'}>
   {small && <source media="(max-width: 47.99rem)" srcset={small.srcSet.attribute} sizes="100vw" type="image/webp" />}
   <source srcset={main.srcSet.attribute} sizes="100vw" type="image/webp" />
   <img
     src={main.src}
-    alt=""
+    alt={alt ?? ''}
     width={src.width}
     height={src.height}
     loading={eager ? 'eager' : 'lazy'}
