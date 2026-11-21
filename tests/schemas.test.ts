@@ -66,6 +66,19 @@ test('семинар: end без start и end раньше start отклоня�
   assert.ok(seminar.safeParse({ ...base, start: '2027-01-02', end: '2027-01-03' }).success);
 });
 
+test('курс: end только вместе со start и не раньше него', () => {
+  assert.ok(!course.safeParse({ ...validCourse, start: undefined, end: '2027-01-28' }).success);
+  assert.ok(!course.safeParse({ ...validCourse, start: '2027-01-28', end: '2027-01-05' }).success);
+  assert.ok(course.safeParse({ ...validCourse, start: '2027-01-05', end: '2027-01-28' }).success);
+});
+
+test('размер группы — целое положительное число, расписание — строка', () => {
+  assert.equal(course.parse({ ...validCourse, groupSize: 7, schedule: 'вторник и четверг, 18:30–20:00' }).groupSize, 7);
+  assert.ok(!course.safeParse({ ...validCourse, groupSize: 0 }).success);
+  assert.ok(!course.safeParse({ ...validCourse, groupSize: 7.5 }).success);
+  assert.ok(!seminar.safeParse({ title: 'S', status: 'draft', direction: 'grammatik', schedule: '' }).success);
+});
+
 test('страница: статус обязателен, noindex по умолчанию false', () => {
   assert.equal(pageSchema.parse({ title: 'Impressum', status: 'draft' }).noindex, false);
   assert.ok(!pageSchema.safeParse({ title: 'Impressum' }).success);

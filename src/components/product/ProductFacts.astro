@@ -4,32 +4,45 @@
  * отсутствующие данные не подменяются заглушками.
  */
 import type { Product } from '../../lib/products';
-import { formatDate, formatPrice, isoDate } from '../../lib/format';
+import { formatDate, formatDateRange, formatPrice, isoDate } from '../../lib/format';
 import { getSiteSettings } from '../../lib/site';
 
 interface Props {
   product: Product;
+  /** Не показывать стоимость (её выводит панель страницы отдельно, крупно). */
+  hidePrice?: boolean;
 }
-const { product } = Astro.props;
+const { product, hidePrice = false } = Astro.props;
 const { locale } = await getSiteSettings();
 const d = product.data;
-const end = 'end' in d ? d.end : undefined;
+const end = d.end;
 ---
 
 <dl class="product-facts">
   {d.level && <><dt>Уровень</dt><dd>{d.level.join(' – ')}</dd></>}
   {d.format && <><dt>Формат</dt><dd>{d.format}</dd></>}
+  {d.groupSize && <><dt>Группа</dt><dd>до {d.groupSize} человек</dd></>}
   {d.duration && <><dt>Продолжительность</dt><dd>{d.duration}</dd></>}
   {
     d.start && (
       <>
-        <dt>Дата</dt>
+        <dt>{end ? 'Даты' : 'Дата'}</dt>
         <dd>
-          <time datetime={isoDate(d.start)}>{formatDate(d.start, locale)}</time>
-          {end && <> – <time datetime={isoDate(end)}>{formatDate(end, locale)}</time></>}
+          {end ? (
+            <time datetime={isoDate(d.start)}>{formatDateRange(d.start, end, locale)}</time>
+          ) : (
+            <time datetime={isoDate(d.start)}>{formatDate(d.start, locale)}</time>
+          )}
         </dd>
       </>
     )
   }
-  {d.price !== undefined && <><dt>Стоимость</dt><dd>{formatPrice(d.price, d.currency, locale)}</dd></>}
+  {d.schedule && <><dt>Расписание</dt><dd>{d.schedule}</dd></>}
+  {!hidePrice && d.price !== undefined && <><dt>Стоимость</dt><dd>{formatPrice(d.price, d.currency, locale)}</dd></>}
 </dl>
+
+<style>
+  .product-facts { display: grid; gap: 0.85rem; margin: 0; }
+  .product-facts dt { font-size: var(--text-caption); color: var(--color-gold-light); }
+  .product-facts dd { margin: -0.7rem 0 0; font-weight: var(--weight-semibold); }
+</style>

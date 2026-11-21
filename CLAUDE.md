@@ -61,7 +61,8 @@
    Имя папки = адрес страницы: латиница в нижнем регистре, цифры, дефисы (`grammatik-b1` → `/kurse/grammatik-b1/`).
 2. Заполни frontmatter **только реальными данными владельца**. Всегда обязательны: `title`, `status`,
    `direction` (`grammatik` | `beruf`). Для публикации (`status: published`) ещё обязательны `level`, `format`,
-   `duration`, `summary`. Необязательные: `titleDe`, `order`, `start`, `price` (евро), `currency` (только `EUR`),
+   `duration`, `summary`. Необязательные: `titleDe`, `order`, `start`, `end` (только вместе со `start` и не раньше него),
+   `schedule` (дни и время словами), `groupSize` (максимум человек), `price` (евро), `currency` (только `EUR`),
    `cover` + `coverAlt`, `seo`. План курса — раздел в тексте `index.md`.
 3. Текст страницы — в теле `index.md` (Markdown), без HTML и без встроенных скриптов.
 4. Изображение-обложку положи в ту же папку и укажи `cover: ./cover.jpg` и `coverAlt`.
@@ -73,7 +74,7 @@
 ## Как добавить семинар
 
 То же самое в `src/content/seminars/` по образцу `_example-seminar/`. Всегда обязательны: `title`, `status`,
-`direction`; для публикации ещё `format`, `summary`. Необязательные: `titleDe`, `level`, `duration`, `start`, `end`
+`direction`; для публикации ещё `format`, `summary`. Необязательные: `titleDe`, `level`, `duration`, `schedule`, `groupSize`, `start`, `end`
 (только вместе со `start` и не раньше него), `price`, `order`, `cover` + `coverAlt`, `seo`.
 
 ## Подразделы обучения
@@ -84,6 +85,11 @@
   ведущий к месту видео на странице (`#probeurok`). Готовое видео — ссылка `https://` на площадку; встраивание
   плеера — только после решения по DSGVO.
 - Подраздел со `status: preparing` показывает «Программа в подготовке».
+- Курсы и семинары на странице подраздела и в каталогах — матовые мини-блоки (`src/components/catalog/ProductTile.astro`):
+  уровень, продолжительность, группа, старт. Клик по опубликованному открывает страницу продукта
+  (`src/components/product/ProductPage.astro`: описание, стоимость, условия, форма заявки).
+- В меню и в ссылках главной подразделы называются «Грамматика» и «Старт карьеры»; каталоги `/kurse/`, `/seminare/`
+  остаются, но в меню не выводятся.
 
 ## Изменение и снятие с публикации
 

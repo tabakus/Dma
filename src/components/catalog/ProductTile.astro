@@ -1,0 +1,171 @@
+---
+/**
+ * Мини-блок курса или семинара: матовое стекло поверх фото, название (RU + DE) и ключевые данные —
+ * уровень, продолжительность, размер группы, старт. Только заполненные поля, ничего не подставляется.
+ * Опубликованный продукт — ссылка на свою страницу (описание, план, стоимость, заявка);
+ * анонс — тот же блок без ссылки, с пометкой «Скоро».
+ */
+import ArrowIcon from '../brand/ArrowIcon.astro';
+import { hasPage, productUrl, type Product } from '../../lib/products';
+import { formatDate, isoDate } from '../../lib/format';
+import { getSiteSettings } from '../../lib/site';
+
+interface Props {
+  product: Product;
+  /** Уровень заголовка названия: 3 на странице подраздела и в каталоге. */
+  headingLevel?: 3 | 4;
+}
+const { product, headingLevel = 3 } = Astro.props;
+const { locale } = await getSiteSettings();
+const d = product.data;
+const linked = hasPage(product);
+const kind = product.collection === 'courses' ? 'course' : 'seminar';
+const Heading = `h${headingLevel}` as 'h3' | 'h4';
+const Root = linked ? 'a' : 'div';
+
+const facts = [
+  d.level && { label: 'Уровень', value: d.level.join('–') },
+  d.duration && { label: 'Продолжительность', value: d.duration },
+  d.groupSize && { label: 'Группа', value: `до ${d.groupSize} человек` },
+].filter(Boolean) as { label: string; value: string }[];
+const titleId = `tile-${product.collection}-${product.id}`;
+---
+
+<Root
+  class:list={['tile', kind, { soon: !linked }]}
+  {...linked ? { href: productUrl(product), 'aria-labelledby': titleId } : {}}
+>
+  <span class="names">
+    <Heading id={titleId} class="title">{d.title}</Heading>
+    {d.titleDe && <span class="de" lang="de">{d.titleDe}</span>}
+  </span>
+
+  {
+    linked && facts.length > 0 && (
+      <dl class="facts">
+        {facts.map((f) => (
+          <div class="fact">
+            <dt class="visually-hidden">{f.label}</dt>
+            <dd>{f.value}</dd>
+          </div>
+        ))}
+      </dl>
+    )
+  }
+
+  <span class="foot">
+    {
+      linked ? (
+        <>
+          {d.start ? (
+            <span class="start">
+              Старт <time datetime={isoDate(d.start)}>{formatDate(d.start, locale)}</time>
+            </span>
+          ) : (
+            <span class="start">Подробнее и стоимость</span>
+          )}
+          <span class="go">
+            <span class="visually-hidden">Открыть описание и стоимость</span>
+            <ArrowIcon />
+          </span>
+        </>
+      ) : (
+        <span class="badge">Скоро</span>
+      )
+    }
+  </span>
+</Root>
+
+<style>
+  .tile {
+    --tint: var(--color-walnut);
+    position: relative;
+    display: grid;
+    grid-template-rows: 1fr auto auto;
+    gap: var(--space-3);
+    height: 100%;
+    min-height: 13rem;
+    padding: clamp(1.15rem, 0.9rem + 0.8vw, 1.6rem);
+    border-radius: calc(var(--radius) * 3);
+    border: 1px solid var(--glass-border);
+    background: color-mix(in srgb, var(--tint) 88%, transparent);
+    box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-parchment) 12%, transparent), 0 30px 50px -36px #000;
+    color: var(--color-parchment);
+    text-decoration: none;
+    transition: transform 0.25s, border-color 0.25s;
+  }
+  @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .tile {
+      background: color-mix(in srgb, var(--tint) 58%, transparent);
+      backdrop-filter: blur(var(--glass-blur)) saturate(1.2);
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.2);
+    }
+  }
+  .course { --tint: var(--color-oxblood); }
+  .seminar { --tint: var(--color-emerald); }
+  a.tile:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--color-gold) 80%, transparent); }
+  a.tile:focus-visible { outline-offset: 4px; }
+
+  .names { display: grid; gap: 0.3rem; align-content: start; }
+  .title {
+    margin: 0;
+    font-size: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem);
+    font-weight: 560;
+    line-height: 1.2;
+    letter-spacing: 0;
+    color: var(--color-parchment);
+  }
+  .de { font-size: var(--text-small); color: var(--color-gold-light); }
+
+  .facts { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0; }
+  .fact dd {
+    margin: 0;
+    padding: 0.3rem 0.65rem;
+    border-radius: 999px;
+    border: 1px solid var(--glass-border);
+    background: color-mix(in srgb, var(--color-walnut-deep) 35%, transparent);
+    font-size: var(--text-caption);
+    font-weight: var(--weight-semibold);
+    white-space: nowrap;
+  }
+
+  .foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--glass-border);
+    min-height: 3.5rem;
+  }
+  .start { font-size: var(--text-small); font-weight: var(--weight-medium); }
+  .go {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    background: var(--color-button-bg);
+    color: var(--color-button-text);
+    transition: transform 0.25s, background-color 0.2s;
+  }
+  a.tile:hover .go { transform: translateX(3px); background: var(--color-button-bg-hover); }
+
+  /* Анонс: спокойнее, без ссылки */
+  .soon { min-height: 9.5rem; }
+  .soon .title { font-size: clamp(1.1rem, 1rem + 0.35vw, 1.25rem); }
+  .badge {
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    border: 1px solid var(--glass-border);
+    background: color-mix(in srgb, var(--color-parchment) 10%, transparent);
+    font-size: var(--text-caption);
+    font-weight: var(--weight-semibold);
+  }
+  .soon .foot { min-height: 0; padding-top: var(--space-2); }
+
+  @media (prefers-reduced-motion: reduce) {
+    a.tile:hover, a.tile:hover .go { transform: none; }
+  }
+</style>
