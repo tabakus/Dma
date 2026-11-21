@@ -3,7 +3,7 @@
 # Для публикации нужны данные владельца (описание, план, стоимость, формат, продолжительность, уровень),
 # затем status: published. Ничего не выдумывать.
 title: "Предложения"
-titleDe: "Sätze"
+titleDe: "Satzbau"   # по решению автора 22.11.2026 (было «Sätze»)
 status: announced
 direction: grammatik
 order: 20

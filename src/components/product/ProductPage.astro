@@ -1,7 +1,7 @@
 ---
 /**
  * Страница курса или семинара (общий шаблон для /kurse/<папка>/ и /seminare/<папка>/).
- * Сверху — название и ключевые данные на фоне стола с лампой; справа — матовая панель со стоимостью,
+ * Сверху — название (сначала немецкое, под ним русское) и ключевые данные на фоне стола с лампой; справа — матовая панель со стоимостью,
  * характеристиками и кнопкой «Записаться». Ниже — авторский текст (index.md) на пергаменте и форма заявки.
  * Показываются только заполненные поля; ничего не подставляется.
  */
@@ -47,8 +47,16 @@ const kindLabel = type === 'course' ? 'Курс' : 'Семинар';
           <a href={direction.data.path}><span aria-hidden="true">←</span> <span lang="de">{direction.data.title}</span></a>
         </p>
         <p class="eyebrow">{kindLabel}</p>
-        <h1 id="product-title">{d.title}</h1>
-        {d.titleDe && <p class="de" lang="de">{d.titleDe}</p>}
+        {
+          d.titleDe ? (
+            <>
+              <h1 id="product-title" lang="de">{d.titleDe}</h1>
+              <p class="sub">{d.title}</p>
+            </>
+          ) : (
+            <h1 id="product-title">{d.title}</h1>
+          )
+        }
         {d.summary && <p class="lead">{d.summary}</p>}
       </div>
 
@@ -114,7 +122,7 @@ const kindLabel = type === 'course' ? 'Курс' : 'Семинар';
   .back a:hover { text-decoration: underline; }
   .copy .eyebrow { margin-top: var(--space-3); }
   h1 { font-size: var(--text-h1); font-weight: 560; line-height: var(--leading-h1); text-shadow: 0 2px 24px var(--color-walnut-deep); }
-  .de { font-family: var(--font-display); font-size: var(--text-h4); color: var(--color-gold-light); }
+  .sub { font-family: var(--font-display); font-size: var(--text-h4); color: var(--color-gold-light); }
   .lead { max-width: 40ch; font-size: var(--text-lead); line-height: var(--leading-lead); color: var(--color-parchment); }
 
   .panel {
@@ -168,7 +176,7 @@ const kindLabel = type === 'course' ? 'Курс' : 'Семинар';
   .prose :global(strong) { font-weight: var(--weight-semibold); }
 
   /* ---------- Заявка ---------- */
-  .signup-section { padding-block: clamp(3rem, 2rem + 4vw, 5.5rem) var(--section-space); scroll-margin-top: 4.5rem; }
+  .signup-section { padding-block: clamp(3rem, 2rem + 4vw, 5.5rem) var(--section-space); scroll-margin-top: 6.5rem; }
   .form-panel {
     max-width: 40rem;
     padding: clamp(1.25rem, 1rem + 1.5vw, 2.5rem);

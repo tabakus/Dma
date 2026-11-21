@@ -2,6 +2,7 @@
 # Схема полей: src/lib/schemas.ts → siteSchema.
 settings:
   name: "Deutsch mit Akzent"
+  tagline: "Акцент на системе. Грамматика по полочкам"   # слоган под логотипом (выбран владельцем 22.11.2026)
   # Язык первой версии сайта — русский (утверждено, см. docs/open-questions.md). Тексты интерфейса ниже — технические заглушки.
   locale: ru
   defaultDescription: "Deutsch mit Akzent — авторская онлайн-школа немецкого языка."

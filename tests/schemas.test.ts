@@ -124,6 +124,8 @@ test('настройки: headerCta необязательна и проверя
   assert.ok(siteSchema.safeParse(base).success);
   assert.ok(siteSchema.safeParse({ ...base, headerCta: { label: 'Оставить заявку', href: '/#obuchenie' } }).success);
   assert.ok(!siteSchema.safeParse({ ...base, headerCta: { label: 'x', href: 'mailto:a@b.de' } }).success);
+  assert.ok(siteSchema.safeParse({ ...base, tagline: 'Акцент на системе. Грамматика по полочкам' }).success);
+  assert.ok(!siteSchema.safeParse({ ...base, tagline: '' }).success);
 });
 
 // --- Черновики, анонсы, подразделы ------------------------------------------------------------
