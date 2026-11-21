@@ -39,7 +39,7 @@
 | --- | --- | --- | --- |
 | `src/content/courses/` | Content | Курсы: одна папка = один курс (`index.md` + изображения) | **Да** |
 | `src/content/seminars/` | Content | Семинары: одна папка = один семинар | **Да** |
-| `src/content/pages/` | Content | Информационные страницы (`impressum.md`, `datenschutz.md` …) | **Да** |
+| `src/content/pages/` | Content | Информационные страницы (`impressum.md`, `datenschutz.md` …; поле `lang` — язык текста) | **Да** |
 | `src/data/site.yaml` | Content | Название, слоган под логотипом (`tagline`), язык, меню, тексты интерфейса формы | Да, по задаче |
 | `src/data/home.yaml` | Content | Тексты главной страницы (по секциям, схема `homeSchema`) | Да, по задаче |
 | `src/data/directions.yaml` | Content | Подразделы «Обучения»: Deutsche Grammatik, Berufseinstieg (название, адрес, видеоурок) | Да, по задаче |

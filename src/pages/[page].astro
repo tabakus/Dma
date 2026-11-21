@@ -1,5 +1,8 @@
 ---
-/** Информационные страницы из src/content/pages (Impressum, Datenschutz и др.). Только опубликованные. */
+/**
+ * Информационные страницы из src/content/pages (Impressum, Datenschutz и др.). Только опубликованные.
+ * Текст на пергаменте (.paper); язык текста — поле lang (юридические тексты на немецком).
+ */
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
@@ -12,9 +15,25 @@ const { page } = Astro.props;
 const { Content } = await render(page);
 ---
 
-<BaseLayout title={page.data.title} description={page.data.description} noindex={page.data.noindex}>
-  <article>
-    <h1>{page.data.title}</h1>
-    <Content />
+<BaseLayout title={page.data.title} description={page.data.description} noindex={page.data.noindex} fullBleed>
+  <article class="info paper" lang={page.data.lang}>
+    <div class="container prose">
+      <h1>{page.data.title}</h1>
+      <Content />
+    </div>
   </article>
 </BaseLayout>
+
+<style>
+  .info { padding-block: clamp(2.5rem, 1.5rem + 4vw, 5rem) var(--section-space); }
+  .prose { max-width: 46rem; overflow-wrap: break-word; hyphens: auto; }
+  .prose :global(h2), .prose :global(h3) { hyphens: auto; }
+  .prose h1 { margin: 0 0 var(--space-5); }
+  .prose :global(h2) { font-size: var(--text-h3); margin: 2.5rem 0 0.75rem; }
+  .prose :global(h3) { font-size: var(--text-h4); margin: 2rem 0 0.5rem; }
+  .prose :global(h4) { font-size: var(--text-body); margin: 1.5rem 0 0.4rem; }
+  .prose :global(p) { margin: 0 0 1rem; }
+  .prose :global(ul) { margin: 0 0 1rem; padding-left: 1.4rem; }
+  .prose :global(li) { margin-bottom: 0.5rem; }
+  .prose :global(li::marker) { color: var(--color-oxblood); }
+</style>

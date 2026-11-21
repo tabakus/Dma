@@ -151,6 +151,8 @@ export const pageSchema = z.strictObject({
   title: nonEmpty(120),
   status: z.enum(STATUSES),
   description: nonEmpty(160).optional(),
+  /** Язык текста страницы, если он отличается от языка сайта (например, de для Impressum). */
+  lang: z.string().regex(/^[a-z]{2}(-[A-Z]{2})?$/).optional(),
   /** true — страница не индексируется поисковиками. */
   noindex: z.boolean().default(false),
 });
