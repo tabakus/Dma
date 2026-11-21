@@ -99,12 +99,15 @@ main:not(.full-bleed) {
 .btn-on-dark:hover { background: var(--color-parchment); color: var(--color-umber); }
 .btn:active { transform: translateY(1px); }
 
-/* Фон «страницы»: пергамент с мягкой неровностью тона и затемнением к краям (без файлов изображений). */
+/* Фон «страницы»: фото старой бумаги (public/assets/textures/paper.webp), осветлённое пергаментом для контраста текста. */
 .paper {
   background-color: var(--color-parchment);
   background-image:
-    radial-gradient(ellipse at 50% 40%, transparent 55%, color-mix(in srgb, #8a6a3e 22%, transparent) 100%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.33 0 0 0 0 0.18 0 0 0 0.09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    radial-gradient(ellipse at 50% 40%, transparent 55%, color-mix(in srgb, #8a6a3e 16%, transparent) 100%),
+    linear-gradient(color-mix(in srgb, var(--color-parchment) 45%, transparent), color-mix(in srgb, var(--color-parchment) 45%, transparent)),
+    url('/assets/textures/paper.webp');
+  background-size: auto, auto, cover;
+  background-position: center;
   color: var(--color-text);
 }
 

@@ -21,9 +21,9 @@ interface Props {
 const { src, mobile, eager = false, class: className } = Astro.props;
 
 const widths = [640, 960, 1280, 1600, 1920].filter((w) => w <= src.width * 1.5);
-const main = await getImage({ src, widths, sizes: '100vw', format: 'webp', quality: 72 });
+const main = await getImage({ src, widths, sizes: '100vw', format: 'webp', quality: 78 });
 const small = mobile
-  ? await getImage({ src: mobile, widths: [480, 720, 960].filter((w) => w <= mobile.width * 1.5), sizes: '100vw', format: 'webp', quality: 72 })
+  ? await getImage({ src: mobile, widths: [480, 720, 960].filter((w) => w <= mobile.width * 1.5), sizes: '100vw', format: 'webp', quality: 78 })
   : null;
 ---
 

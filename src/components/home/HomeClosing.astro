@@ -1,9 +1,10 @@
 ---
 /**
  * Финальный призыв: слоган крупной типографикой и переходы к обучению. Тексты — home.yaml → closing.
- * Фон — тот же зал библиотеки, сильно затемнённый: возвращение к первому экрану в конце страницы.
+ * Фон — рабочий стол в библиотеке (src/assets/library/desk-still-life.jpg): тетрадь, перо, кофе — приглашение начать.
+ * Слева под текстом — плотная тень, натюрморт справа остаётся видимым.
  */
-import hall from '../../assets/library/hall.jpg';
+import desk from '../../assets/library/desk-still-life.jpg';
 import PhotoBackdrop from '../brand/PhotoBackdrop.astro';
 import { sentences } from '../../lib/text';
 import type { HomeContent } from '../../lib/site';
@@ -16,7 +17,7 @@ const lines = sentences(c.title);
 ---
 
 <section class="closing" aria-labelledby="closing-title">
-  <PhotoBackdrop src={hall} class="closing-bg" />
+  <PhotoBackdrop src={desk} class="closing-bg" />
   <div class="scrim" aria-hidden="true"></div>
   <div class="container grid">
     <div class="copy">
@@ -47,14 +48,14 @@ const lines = sentences(c.title);
     padding-block: calc(var(--section-space) * 1.2);
     color: var(--color-parchment);
   }
-  .closing :global(.closing-bg img) { object-position: 85% 40%; }
+  .closing :global(.closing-bg img) { object-position: 70% 60%; }
   .scrim {
     position: absolute;
     inset: 0;
     z-index: -1;
     background:
       linear-gradient(180deg, var(--color-walnut) 0%, transparent 30%, transparent 70%, var(--color-walnut-deep) 100%),
-      linear-gradient(90deg, color-mix(in srgb, var(--color-walnut) 95%, transparent) 0%, color-mix(in srgb, var(--color-walnut) 80%, transparent) 55%, color-mix(in srgb, var(--color-walnut) 45%, transparent) 100%);
+      linear-gradient(90deg, color-mix(in srgb, var(--color-walnut) 96%, transparent) 0%, color-mix(in srgb, var(--color-walnut) 86%, transparent) 45%, color-mix(in srgb, var(--color-walnut) 30%, transparent) 80%, color-mix(in srgb, var(--color-walnut) 20%, transparent) 100%);
   }
   .grid { display: grid; }
   .copy { display: grid; gap: var(--space-4); max-width: 46rem; }
@@ -70,7 +71,7 @@ const lines = sentences(c.title);
   .text { margin: 0; font-size: var(--text-lead); line-height: var(--leading-lead); color: var(--color-sepia); }
   .actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
   @media (max-width: 47.99rem) {
-    .closing :global(.closing-bg img) { object-position: 92% 40%; }
+    .closing :global(.closing-bg img) { object-position: 75% 60%; }
     .scrim { background: color-mix(in srgb, var(--color-walnut) 84%, transparent); }
   }
   @media (max-width: 30rem) {
