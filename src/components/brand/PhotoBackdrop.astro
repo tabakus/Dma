@@ -1,0 +1,59 @@
+---
+/**
+ * Фоновая фотография секции (декоративная: alt="", скрыта от экранных читалок).
+ * Занимает всю площадь родителя (у родителя — position: relative; isolation: isolate).
+ * Для телефона можно передать отдельный вертикальный кадр (mobile), он выбирается по ширине экрана.
+ * Кадрирование (object-position) секция задаёт своим классом: .my-bg :global(img) { object-position: … }.
+ * Inline-стили не используются (CSP).
+ * Затемнение (scrim), которое держит контраст текста, задаёт сама секция поверх этого слоя.
+ * Фото — src/assets/library/ (сгенерированы владельцем для сайта).
+ */
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  src: ImageMetadata;
+  mobile?: ImageMetadata;
+  /** Первый экран — eager, остальные — lazy. */
+  eager?: boolean;
+  class?: string;
+}
+const { src, mobile, eager = false, class: className } = Astro.props;
+
+const widths = [640, 960, 1280, 1600, 1920].filter((w) => w <= src.width * 1.5);
+const main = await getImage({ src, widths, sizes: '100vw', format: 'webp', quality: 72 });
+const small = mobile
+  ? await getImage({ src: mobile, widths: [480, 720, 960].filter((w) => w <= mobile.width * 1.5), sizes: '100vw', format: 'webp', quality: 72 })
+  : null;
+---
+
+<picture class:list={['backdrop', className]} aria-hidden="true">
+  {small && <source media="(max-width: 47.99rem)" srcset={small.srcSet.attribute} sizes="100vw" type="image/webp" />}
+  <source srcset={main.srcSet.attribute} sizes="100vw" type="image/webp" />
+  <img
+    src={main.src}
+    alt=""
+    width={src.width}
+    height={src.height}
+    loading={eager ? 'eager' : 'lazy'}
+    decoding="async"
+    fetchpriority={eager ? 'high' : 'auto'}
+  />
+</picture>
+
+<style>
+  .backdrop {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .backdrop img {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
+    object-position: 50% 50%;
+  }
+</style>

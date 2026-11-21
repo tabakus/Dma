@@ -1,5 +1,4 @@
-/* Базовые правила: сброс, доступность, адаптивность, базовая типографика бренда (v1.1).
-   Композиция страниц и компонентов — отдельный этап дизайна. */
+/* Базовые правила: сброс, доступность, адаптивность, базовая типографика бренда (v2.0 «Старинная библиотека»). */
 @import './tokens.css';
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -15,15 +14,23 @@ body {
   font-optical-sizing: auto;
   color: var(--color-text);
   background: var(--color-bg);
+  /* подвал прижат к низу и на коротких страницах */
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
 }
+main { flex: 1 0 auto; }
 
-/* Заголовки — Inter Display: тот же шрифт с оптическим размером 32, насыщенность 700 (как в логотипе). */
+/* Заголовки — Literata: книжная антиква, оптический размер подбирается автоматически. */
 h1, h2, h3, h4 {
   font-family: var(--font-display);
-  font-weight: var(--weight-bold);
-  font-variation-settings: 'opsz' var(--font-display-opsz);
+  font-weight: var(--weight-semibold);
+  font-optical-sizing: auto;
+  color: var(--color-heading);
   text-wrap: balance;
 }
+p, li { text-wrap: pretty; }
+::selection { background: var(--color-gold); color: var(--color-ink); }
 h1 { font-size: var(--text-h1); line-height: var(--leading-h1); letter-spacing: var(--tracking-h1); }
 h2 { font-size: var(--text-h2); line-height: var(--leading-h2); letter-spacing: var(--tracking-h2); }
 h3 { font-size: var(--text-h3); line-height: var(--leading-h3); letter-spacing: var(--tracking-h3); }
@@ -52,13 +59,22 @@ main:not(.full-bleed) {
 .application-form[data-state='success'] .form-status { color: var(--color-success); }
 .application-form[data-state='error'] .form-status { color: var(--color-error); }
 
-/* Метка, кнопки — общие элементы интерфейса бренда */
+/* Метка раздела — как отметка на полке: короткая золотая линия и подпись строчными. */
 .eyebrow {
-  font-size: var(--text-label);
-  font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  color: var(--color-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: var(--text-small);
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.01em;
+  color: var(--color-mark);
+}
+.eyebrow::before {
+  content: '';
+  width: 2rem;
+  height: 1px;
+  background: currentColor;
+  flex: none;
 }
 
 .btn {
@@ -79,9 +95,18 @@ main:not(.full-bleed) {
 .btn-primary:hover { background: var(--color-button-bg-hover); color: var(--color-button-text-hover); }
 .btn-secondary { background: transparent; color: var(--color-text); border-color: var(--color-text); }
 .btn-secondary:hover { background: var(--color-text); color: var(--color-bg); }
-.btn-on-dark { background: transparent; color: var(--color-milk); border-color: var(--color-milk); }
-.btn-on-dark:hover { background: var(--color-milk); color: var(--color-ink); }
+.btn-on-dark { background: transparent; color: var(--color-parchment); border-color: var(--color-parchment); }
+.btn-on-dark:hover { background: var(--color-parchment); color: var(--color-umber); }
 .btn:active { transform: translateY(1px); }
+
+/* Фон «страницы»: пергамент с мягкой неровностью тона и затемнением к краям (без файлов изображений). */
+.paper {
+  background-color: var(--color-parchment);
+  background-image:
+    radial-gradient(ellipse at 50% 40%, transparent 55%, color-mix(in srgb, #8a6a3e 22%, transparent) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.33 0 0 0 0 0.18 0 0 0 0.09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  color: var(--color-text);
+}
 
 .visually-hidden {
   position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;

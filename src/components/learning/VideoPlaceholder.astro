@@ -32,7 +32,7 @@ const { video } = Astro.props.direction.data;
 </section>
 
 <style>
-  .video { padding-block: var(--section-space); scroll-margin-top: 4.5rem; }
+  .video { padding-block: clamp(1rem, 0.5rem + 2vw, 2.5rem) var(--section-space); scroll-margin-top: 4.5rem; }
   .title { margin: 0 0 var(--space-4); }
   .frame {
     position: relative;
@@ -43,10 +43,12 @@ const { video } = Astro.props.direction.data;
     aspect-ratio: 16 / 9;
     width: min(100%, 56rem);
     border-radius: calc(var(--radius) * 2);
+    border: 1px solid var(--glass-border);
     background:
-      radial-gradient(circle at 80% 85%, color-mix(in srgb, var(--color-accent) 35%, transparent) 0 18%, transparent 18.2%),
-      var(--color-ink);
-    color: var(--color-milk);
+      radial-gradient(ellipse at 50% 45%, color-mix(in srgb, var(--color-gold) 22%, transparent), transparent 60%),
+      radial-gradient(ellipse at 50% 50%, var(--color-emerald), var(--color-walnut-deep) 85%);
+    box-shadow: 0 40px 70px -40px #000;
+    color: var(--color-parchment);
     text-decoration: none;
     overflow: hidden;
   }
@@ -67,6 +69,6 @@ const { video } = Astro.props.direction.data;
     border-width: 0.9rem 0 0.9rem 1.5rem;
     border-color: transparent transparent transparent var(--color-ink);
   }
-  .caption { font-weight: var(--weight-medium); color: color-mix(in srgb, var(--color-milk) 85%, transparent); text-align: center; padding-inline: var(--space-3); }
+  .caption { font-weight: var(--weight-medium); color: var(--color-parchment); text-align: center; padding-inline: var(--space-3); }
   .ready:hover .play { transform: scale(1.05); }
 </style>

@@ -1,6 +1,6 @@
 ---
 /**
- * Шапка сайта: логотип, основное меню и заметная кнопка (site.yaml → nav, headerCta).
+ * Шапка сайта (тёмная, полупрозрачная поверх фото): логотип для тёмного фона, основное меню и заметная кнопка (site.yaml → nav, headerCta).
  * На узких экранах меню сворачивается в панель за кнопкой «Меню».
  * Без JavaScript меню остаётся раскрытым, чтобы все ссылки были доступны.
  */
@@ -20,7 +20,7 @@ const isCurrent = (href: string) => {
 
 <header class="site-header" data-nav>
   <div class="container bar">
-    <Logo />
+    <Logo variant="dark" />
     <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu" data-nav-toggle hidden>
       <span class="menu-icon" aria-hidden="true"><i></i><i></i></span>
       <span>Меню</span>
@@ -49,8 +49,9 @@ const isCurrent = (href: string) => {
     position: sticky;
     top: 0;
     z-index: 20;
-    background: color-mix(in srgb, var(--color-bg) 92%, transparent);
-    backdrop-filter: blur(8px);
+    background: color-mix(in srgb, var(--color-walnut) 82%, transparent);
+    backdrop-filter: blur(14px) saturate(1.2);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
     border-bottom: 1px solid var(--color-line);
   }
   .bar {
@@ -83,6 +84,7 @@ const isCurrent = (href: string) => {
     transition: border-color 0.15s, color 0.15s;
   }
   nav a:hover { color: var(--color-link); }
+  nav a[aria-current='page'] { color: var(--color-link); }
   nav a[aria-current='page'] { border-bottom-color: var(--color-accent); }
   .cta { white-space: nowrap; }
 

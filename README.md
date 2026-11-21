@@ -18,7 +18,7 @@
 | --- | --- |
 | Генератор сайта | [Astro](https://astro.build) 7, статическая сборка |
 | Контент | Markdown + YAML, Astro Content Collections со схемами (Zod) |
-| Стили | Нативный CSS, дизайн-токены в `src/styles/tokens.css` (бренд-система v1.1, [docs/brand-system.md](docs/brand-system.md)) |
+| Стили | Нативный CSS, дизайн-токены в `src/styles/tokens.css` (бренд-система v2.0 «Старинная библиотека», [docs/brand-system.md](docs/brand-system.md)) |
 | Интерактивность | TypeScript без клиентских фреймворков (только форма заявки) |
 | Заявки | Cloudflare Pages Functions → собственный SMTP-клиент на `cloudflare:sockets` (с реальным провайдером не проверен, см. [docs/smtp.md](docs/smtp.md)) |
 | Хостинг | Cloudflare Pages, проект `deutschmitakzent` (подключён к `tabakus/dma`) |
@@ -74,7 +74,7 @@ functions/api/        Cloudflare Pages Function: POST /api/application
 server/
   application/        проверки, защита, формирование письма, обработчик
   smtp/               SMTP-клиент для Workers Runtime + адаптер cloudflare:sockets
-public/               _headers, fonts/ (Inter WOFF2 + OFL.txt), assets/
+public/               _headers, fonts/ (Inter и Literata WOFF2 + лицензии OFL), assets/
 tests/                тесты node:test
 docs/                 архитектура, SMTP, открытые вопросы
 ```
