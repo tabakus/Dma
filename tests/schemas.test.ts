@@ -79,6 +79,11 @@ test('размер группы — целое положительное чис
   assert.ok(!seminar.safeParse({ title: 'S', status: 'draft', direction: 'grammatik', schedule: '' }).success);
 });
 
+test('страница: язык текста — код вида de или de-DE', () => {
+  assert.ok(pageSchema.safeParse({ title: 'Impressum', status: 'published', lang: 'de' }).success);
+  assert.ok(!pageSchema.safeParse({ title: 'Impressum', status: 'published', lang: 'Deutsch' }).success);
+});
+
 test('страница: статус обязателен, noindex по умолчанию false', () => {
   assert.equal(pageSchema.parse({ title: 'Impressum', status: 'draft' }).noindex, false);
   assert.ok(!pageSchema.safeParse({ title: 'Impressum' }).success);
