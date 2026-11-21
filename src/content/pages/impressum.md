@@ -12,7 +12,7 @@ Berliner Straße 28
 ## Kontakt
 
 Telefon: 017627814027  
-E-Mail: eteri1981@gmail.com
+E-Mail: info@deutschmitakzent.de
 
 ## Verbraucher­streit­beilegung/​Universal­schlichtungs­stelle
 
