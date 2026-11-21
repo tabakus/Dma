@@ -1,12 +1,16 @@
 ---
 /**
  * Первый экран главной. Тексты — home.yaml → hero.
- * Справа — фотография (девушка в библиотеке, задумалась над книгами) во фрейме с фирменными
- * акцентами: графитовый модуль и розовый круг из языка логотипа. Позже на фото добавятся текстовые эффекты.
- * Фото: Pexels, photo 8085255 (лицензия Pexels), файл src/assets/home/hero-library.jpg.
+ * Фон — зал старинной библиотеки (на телефоне — вертикальный кадр), затемнение слева держит контраст текста.
+ * Справа — фотография девушки в библиотеке как портрет в тонкой золотой раме; розовый круг логотипа заходит на раму.
+ * Фото девушки: Pexels, photo 8085255 (лицензия Pexels), src/assets/home/hero-library.jpg.
+ * Фон: src/assets/library/hall.jpg, hall-tall.jpg.
  */
 import { Image } from 'astro:assets';
 import heroPhoto from '../../assets/home/hero-library.jpg';
+import hall from '../../assets/library/hall.jpg';
+import hallTall from '../../assets/library/hall-tall.jpg';
+import PhotoBackdrop from '../brand/PhotoBackdrop.astro';
 import { splitAccent } from '../../lib/text';
 import type { HomeContent } from '../../lib/site';
 
@@ -17,6 +21,8 @@ const { hero } = Astro.props;
 ---
 
 <section class="hero" aria-labelledby="hero-title">
+  <PhotoBackdrop src={hall} mobile={hallTall} eager class="hero-bg" />
+  <div class="scrim" aria-hidden="true"></div>
   <div class="container grid">
     <div class="copy">
       {hero.eyebrow && <p class="eyebrow">{hero.eyebrow}</p>}
@@ -43,7 +49,6 @@ const { hero } = Astro.props;
     </div>
 
     <figure class="photo">
-      <span class="accent-square" aria-hidden="true"></span>
       <Image
         src={heroPhoto}
         alt={hero.imageAlt ?? ''}
@@ -60,25 +65,52 @@ const { hero } = Astro.props;
 
 <style>
   .hero {
-    padding-block: clamp(2.5rem, 1rem + 6vw, 6.5rem) clamp(3.5rem, 2rem + 6vw, 7.5rem);
+    position: relative;
+    isolation: isolate;
     overflow: hidden;
+    display: grid;
+    align-items: center;
+    min-height: min(92svh, 56rem);
+    padding-block: clamp(3rem, 1.5rem + 6vw, 7rem) clamp(4rem, 2rem + 6vw, 8rem);
+    color: var(--color-parchment);
+  }
+  .hero :global(.hero-bg img) { object-position: 60% 50%; }
+  /* Затемнение: глубокая тень слева под текстом, свет окна справа остаётся видимым; снизу — переход к следующей секции */
+  .scrim {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(180deg, transparent 60%, var(--color-walnut) 100%),
+      linear-gradient(90deg,
+        color-mix(in srgb, var(--color-walnut) 94%, transparent) 0%,
+        color-mix(in srgb, var(--color-walnut) 82%, transparent) 38%,
+        color-mix(in srgb, var(--color-walnut) 30%, transparent) 70%,
+        color-mix(in srgb, var(--color-walnut) 45%, transparent) 100%);
   }
   .grid {
     display: grid;
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
     gap: clamp(2rem, 1rem + 4vw, 5rem);
     align-items: center;
   }
   .copy { display: grid; gap: var(--space-4); min-width: 0; }
   .copy .eyebrow { margin: 0; }
-  h1 { margin: 0; max-width: 14ch; }
+  h1 {
+    margin: 0;
+    max-width: 15ch;
+    font-size: clamp(2.6rem, 1.6rem + 3.8vw, 4.75rem);
+    font-weight: 560;
+    line-height: 1.04;
+    text-shadow: 0 2px 24px color-mix(in srgb, var(--color-walnut-deep) 60%, transparent);
+  }
   .accent { color: var(--color-accent); }
   .lead {
     margin: 0;
-    max-width: 36ch;
+    max-width: 38ch;
     font-size: var(--text-lead);
     line-height: var(--leading-lead);
-    color: var(--color-muted);
+    color: var(--color-sepia);
   }
   .actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) var(--space-5); margin-top: var(--space-2); }
   .more { display: flex; gap: var(--space-4); list-style: none; margin: 0; padding: 0; }
@@ -87,21 +119,28 @@ const { hero } = Astro.props;
     align-items: center;
     gap: 0.35rem;
     min-height: var(--tap-min);
+    color: var(--color-gold);
     font-weight: var(--weight-semibold);
     text-decoration: none;
-    border-bottom: 2px solid transparent;
+    border-bottom: 1px solid transparent;
   }
   .more a:hover { border-bottom-color: currentColor; }
   .more a span { transition: transform 0.15s; }
   .more a:hover span { transform: translateX(3px); }
 
-  /* ---------- Фото ---------- */
+  /* ---------- Портрет в раме ---------- */
   .photo {
     position: relative;
     margin: 0;
-    width: min(100%, 30rem);
-    justify-self: center;
-    isolation: isolate;
+    width: min(100%, 28rem);
+    justify-self: end;
+    padding: clamp(0.5rem, 0.35rem + 0.5vw, 0.85rem);
+    background: color-mix(in srgb, var(--color-walnut-deep) 70%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-gold) 70%, transparent);
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--color-walnut-deep) 80%, transparent),
+      0 50px 80px -40px #000;
+    animation: rise 1s cubic-bezier(0.2, 0.7, 0.2, 1) both;
   }
   .img {
     display: block;
@@ -110,52 +149,48 @@ const { hero } = Astro.props;
     aspect-ratio: 4 / 5;
     object-fit: cover;
     object-position: 45% 22%;
-    border-radius: calc(var(--radius) * 3);
-    box-shadow: 0 40px 60px -45px color-mix(in srgb, var(--color-ink) 70%, transparent);
-    animation: rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    outline: 1px solid color-mix(in srgb, var(--color-gold) 45%, transparent);
+    outline-offset: -0.5rem;
   }
-  /* графитовый модуль за фото — «система» */
-  .accent-square {
-    position: absolute;
-    z-index: -1;
-    left: -1.5rem;
-    top: -1.5rem;
-    width: 42%;
-    aspect-ratio: 1;
-    border-radius: calc(var(--radius) * 1.5);
-    background: var(--color-graphite);
-  }
-  /* розовый круг выходит за край фото — «Akzent», как в логотипе */
+  /* розовый круг логотипа заходит на раму — «Akzent» */
   .accent-circle {
     position: absolute;
-    right: -1.75rem;
-    bottom: 12%;
-    width: 28%;
+    right: -1.6rem;
+    bottom: 10%;
+    width: 22%;
     aspect-ratio: 1;
     border-radius: 50%;
     background: var(--color-accent);
-    animation: pop 0.7s 0.35s cubic-bezier(0.2, 0.7, 0.2, 1.2) both;
+    box-shadow: 0 18px 30px -16px #000;
+    animation: pop 0.7s 0.45s cubic-bezier(0.2, 0.7, 0.2, 1.2) both;
   }
-  @keyframes rise { from { transform: translateY(16px); } }
-  @keyframes pop { from { transform: scale(0.6); } }
+  @keyframes rise { from { opacity: 0; transform: translateY(18px); } }
+  @keyframes pop { from { transform: scale(0.5); } }
   @media (prefers-reduced-motion: reduce) {
-    .img, .accent-circle { animation: none; }
+    .photo, .accent-circle { animation: none; }
   }
 
-  /* ---------- Планшет ---------- */
+  /* ---------- Планшет и телефон: фото под текстом, вертикальный кадр зала ---------- */
   @media (max-width: 60rem) {
     .grid { grid-template-columns: 1fr; }
     h1 { max-width: 16ch; }
-    .photo { width: min(100%, 26rem); justify-self: start; margin-left: 1.5rem; }
+    .photo { width: min(100% - 1.75rem, 24rem); justify-self: start; }
   }
-  /* ---------- Телефон: компактная графика, меньше «правил», кнопка на всю ширину ---------- */
+  @media (max-width: 47.99rem) {
+    .hero { min-height: 0; padding-bottom: clamp(3rem, 2rem + 4vw, 4rem); }
+    .hero :global(.hero-bg img) { object-position: 50% 30%; }
+    .scrim {
+      background: linear-gradient(180deg,
+        color-mix(in srgb, var(--color-walnut) 72%, transparent) 0%,
+        color-mix(in srgb, var(--color-walnut) 82%, transparent) 45%,
+        var(--color-walnut) 100%);
+    }
+  }
   @media (max-width: 30rem) {
     .actions { flex-direction: column; align-items: stretch; gap: var(--space-2); }
     .actions .btn { width: 100%; }
     .more { justify-content: space-between; }
-    .photo { width: calc(100% - 2.5rem); margin-left: 1rem; }
     .img { aspect-ratio: 5 / 4; object-position: 45% 18%; }
-    .accent-square { left: -1rem; top: -1rem; }
-    .accent-circle { right: -1.25rem; width: 24%; }
+    .accent-circle { right: -1.25rem; width: 20%; }
   }
 </style>

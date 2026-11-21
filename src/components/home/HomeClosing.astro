@@ -1,8 +1,11 @@
 ---
 /**
  * Финальный призыв: слоган крупной типографикой и переходы к обучению. Тексты — home.yaml → closing.
- * Графика — модули, поднимающиеся ступенями к кругу: путь и прогресс.
+ * Фон — рабочий стол в библиотеке (src/assets/library/desk-still-life.jpg): тетрадь, перо, кофе — приглашение начать.
+ * Слева под текстом — плотная тень, натюрморт справа остаётся видимым.
  */
+import desk from '../../assets/library/desk-still-life.jpg';
+import PhotoBackdrop from '../brand/PhotoBackdrop.astro';
 import { sentences } from '../../lib/text';
 import type { HomeContent } from '../../lib/site';
 
@@ -14,6 +17,8 @@ const lines = sentences(c.title);
 ---
 
 <section class="closing" aria-labelledby="closing-title">
+  <PhotoBackdrop src={desk} class="closing-bg" />
+  <div class="scrim" aria-hidden="true"></div>
   <div class="container grid">
     <div class="copy">
       <h2 id="closing-title" lang="de">
@@ -24,7 +29,7 @@ const lines = sentences(c.title);
         c.links.length > 0 && (
           <div class="actions">
             {c.links.map((l, i) => (
-              <a class:list={['btn', i === 0 ? 'btn-primary' : 'btn-secondary']} href={l.href}>
+              <a class:list={['btn', i === 0 ? 'btn-primary' : 'btn-on-dark']} href={l.href}>
                 {l.label}
               </a>
             ))}
@@ -32,50 +37,42 @@ const lines = sentences(c.title);
         )
       }
     </div>
-    <div class="steps" aria-hidden="true">
-      <i></i><i></i><i></i><b></b>
-    </div>
   </div>
 </section>
 
 <style>
-  .closing { padding-block: var(--section-space); overflow: hidden; }
-  .grid {
-    display: grid;
-    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-    gap: clamp(2rem, 1rem + 4vw, 5rem);
-    align-items: end;
+  .closing {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding-block: calc(var(--section-space) * 1.2);
+    color: var(--color-parchment);
   }
-  .copy { display: grid; gap: var(--space-4); }
+  .closing :global(.closing-bg img) { object-position: 70% 60%; }
+  .scrim {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(180deg, var(--color-walnut) 0%, transparent 30%, transparent 70%, var(--color-walnut-deep) 100%),
+      linear-gradient(90deg, color-mix(in srgb, var(--color-walnut) 96%, transparent) 0%, color-mix(in srgb, var(--color-walnut) 86%, transparent) 45%, color-mix(in srgb, var(--color-walnut) 30%, transparent) 80%, color-mix(in srgb, var(--color-walnut) 20%, transparent) 100%);
+  }
+  .grid { display: grid; }
+  .copy { display: grid; gap: var(--space-4); max-width: 46rem; }
   h2 {
     margin: 0;
     font-size: clamp(2.5rem, 1.5rem + 4.4vw, 5.25rem);
-    line-height: 1.02;
+    font-weight: 520;
+    line-height: 1.04;
     letter-spacing: var(--tracking-h1);
   }
   .line { display: block; }
   .accent { color: var(--color-accent); }
-  .text { margin: 0; font-size: var(--text-lead); line-height: var(--leading-lead); color: var(--color-muted); }
+  .text { margin: 0; font-size: var(--text-lead); line-height: var(--leading-lead); color: var(--color-sepia); }
   .actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
-
-  /* ступени к кругу */
-  .steps {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    align-items: end;
-    gap: 6%;
-    width: min(100%, 24rem);
-    aspect-ratio: 4 / 3;
-    justify-self: end;
-  }
-  .steps i, .steps b { border-radius: 4px; }
-  .steps i:nth-child(1) { height: 25%; background: var(--color-sand); }
-  .steps i:nth-child(2) { height: 50%; background: var(--color-surface); border: 1px solid var(--color-line); }
-  .steps i:nth-child(3) { height: 75%; background: var(--color-graphite); }
-  .steps b { aspect-ratio: 1; align-self: start; border-radius: 50%; background: var(--color-accent); translate: 0 -20%; }
-  @media (max-width: 48rem) {
-    .grid { grid-template-columns: 1fr; }
-    .steps { justify-self: start; width: min(100%, 16rem); order: -1; }
+  @media (max-width: 47.99rem) {
+    .closing :global(.closing-bg img) { object-position: 75% 60%; }
+    .scrim { background: color-mix(in srgb, var(--color-walnut) 84%, transparent); }
   }
   @media (max-width: 30rem) {
     .actions { flex-direction: column; }

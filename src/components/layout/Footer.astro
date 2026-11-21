@@ -59,8 +59,9 @@ const legal = site.footerNav.filter((l) => published.has(l.href));
 
 <style>
   .site-footer {
-    background: var(--color-ink);
-    color: var(--color-milk);
+    background: var(--color-walnut-deep);
+    color: var(--color-parchment);
+    border-top: 1px solid var(--color-line);
     padding-block: clamp(3rem, 2rem + 4vw, 5rem) var(--space-4);
   }
   .inner {
@@ -74,25 +75,24 @@ const legal = site.footerNav.filter((l) => published.has(l.href));
   .slogan {
     margin: 0;
     font-family: var(--font-display);
-    font-variation-settings: 'opsz' var(--font-display-opsz);
-    font-weight: var(--weight-bold);
+    font-weight: var(--weight-semibold);
     font-size: var(--text-h4);
     line-height: var(--leading-h4);
   }
   .slogan span { color: var(--color-accent); }
   ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.65rem; }
-  a { color: var(--color-milk); text-decoration: none; }
-  a:hover { color: var(--color-accent); text-decoration: underline; }
-  .label { margin: 0 0 0.5rem; font-size: var(--text-label); letter-spacing: var(--tracking-label); text-transform: uppercase; opacity: 0.75; }
+  a { color: var(--color-parchment); text-decoration: none; }
+  a:hover { color: var(--color-gold); text-decoration: underline; }
+  .label { margin: 0 0 0.5rem; font-size: var(--text-small); color: var(--color-gold); }
   .base {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     gap: var(--space-3);
     padding-top: var(--space-4);
-    border-top: 1px solid color-mix(in srgb, var(--color-milk) 18%, transparent);
+    border-top: 1px solid var(--color-line);
     font-size: var(--text-caption);
-    color: color-mix(in srgb, var(--color-milk) 80%, transparent);
+    color: var(--color-sepia);
   }
   .base p { margin: 0; }
   .base ul { display: flex; gap: var(--space-4); }

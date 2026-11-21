@@ -1,8 +1,11 @@
 ---
 /**
- * Результат обучения — тёмный блок (глубокий графит; на странице он один, кроме подвала).
+ * Результат обучения: читальный зал с лучом света (src/assets/library/reading-room.jpg) под тонировкой цвета
+ * «переплёт» — луч проглядывает слева, под списком тонировка плотнее.
  * Тексты — home.yaml → results. Без обещаний уровня или «ноль ошибок».
  */
+import reading from '../../assets/library/reading-room.jpg';
+import PhotoBackdrop from '../brand/PhotoBackdrop.astro';
 import type { HomeContent } from '../../lib/site';
 
 interface Props {
@@ -12,6 +15,8 @@ const { results: r } = Astro.props;
 ---
 
 <section class="results" aria-labelledby="results-title">
+  <PhotoBackdrop src={reading} class="results-bg" />
+  <div class="scrim" aria-hidden="true"></div>
   <div class="container grid">
     <div class="head">
       {r.eyebrow && <p class="eyebrow">{r.eyebrow}</p>}
@@ -22,20 +27,29 @@ const { results: r } = Astro.props;
       {r.items.map((item) => <li>{item}</li>)}
     </ul>
   </div>
-  <span class="orb" aria-hidden="true"></span>
 </section>
 
 <style>
   .results {
     position: relative;
+    isolation: isolate;
     overflow: hidden;
-    background: var(--color-ink);
-    color: var(--color-milk);
+    background: var(--color-oxblood);
+    color: var(--color-parchment);
     padding-block: var(--section-space);
+    border-block: 1px solid var(--color-line);
+  }
+  .results :global(.results-bg img) { object-position: 30% 50%; }
+  .scrim {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(90deg,
+      color-mix(in srgb, var(--color-oxblood) 62%, transparent) 0%,
+      color-mix(in srgb, var(--color-oxblood) 78%, transparent) 40%,
+      color-mix(in srgb, var(--color-oxblood) 90%, transparent) 60%);
   }
   .grid {
-    position: relative;
-    z-index: 1;
     display: grid;
     grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
     gap: clamp(2rem, 1rem + 4vw, 5rem);
@@ -43,9 +57,7 @@ const { results: r } = Astro.props;
   }
   .head { display: grid; gap: var(--space-3); }
   .head > * { margin: 0; }
-  .eyebrow { color: color-mix(in srgb, var(--color-milk) 72%, transparent); }
-  h2 { color: var(--color-milk); }
-  .note { color: color-mix(in srgb, var(--color-milk) 80%, transparent); }
+  .note { color: color-mix(in srgb, var(--color-parchment) 85%, transparent); }
   .items { list-style: none; margin: 0; padding: 0; display: grid; }
   .items li {
     display: grid;
@@ -53,33 +65,22 @@ const { results: r } = Astro.props;
     gap: var(--space-3);
     align-items: baseline;
     padding-block: clamp(1rem, 0.8rem + 0.6vw, 1.4rem);
-    border-top: 1px solid color-mix(in srgb, var(--color-milk) 16%, transparent);
-    font-size: clamp(1.125rem, 1rem + 0.5vw, 1.4rem);
+    border-top: 1px solid var(--color-line);
+    font-family: var(--font-display);
+    font-size: clamp(1.125rem, 1rem + 0.5vw, 1.45rem);
     line-height: 1.35;
-    font-weight: var(--weight-medium);
   }
-  .items li:last-child { border-bottom: 1px solid color-mix(in srgb, var(--color-milk) 16%, transparent); }
+  .items li:last-child { border-bottom: 1px solid var(--color-line); }
   .items li::before {
     content: '';
-    width: 0.75rem;
-    height: 0.75rem;
-    border-radius: 2px;
-    background: var(--color-accent);
-    translate: 0 -0.1em;
-  }
-  /* фирменный круг уходит за край блока */
-  .orb {
-    position: absolute;
-    left: -6rem;
-    bottom: -8rem;
-    width: clamp(14rem, 10rem + 14vw, 24rem);
-    aspect-ratio: 1;
-    border-radius: 50%;
-    background: var(--color-accent);
-    opacity: 0.9;
+    width: 0.6rem;
+    height: 0.6rem;
+    rotate: 45deg;
+    background: var(--color-gold);
+    translate: 0 -0.15em;
   }
   @media (max-width: 52rem) {
     .grid { grid-template-columns: 1fr; }
-    .orb { left: auto; right: -7rem; bottom: auto; top: -7rem; width: 14rem; }
+    .scrim { background: linear-gradient(180deg, color-mix(in srgb, var(--color-oxblood) 65%, transparent) 0%, color-mix(in srgb, var(--color-oxblood) 90%, transparent) 30%); }
   }
 </style>

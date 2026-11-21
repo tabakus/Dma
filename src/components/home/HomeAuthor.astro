@@ -1,6 +1,7 @@
 ---
 /**
  * Преподаватель (якорь #avtor). Тексты — home.yaml → author.
+ * Светлая «страница» (пергамент); место для фото оформлено как портрет в раме.
  * Фото, имя и биография пока не предоставлены: показывается аккуратное место для фотографии.
  * Ничего не выдумывается: имя и ссылка появляются, только когда заданы в home.yaml.
  */
@@ -12,7 +13,7 @@ interface Props {
 const { author: a } = Astro.props;
 ---
 
-<section class="author" id="avtor" aria-labelledby="author-title">
+<section class="author paper" id="avtor" aria-labelledby="author-title">
   <div class="container grid">
     <div class="photo" role="img" aria-label={a.photoPlaceholder ?? 'Место для фотографии преподавателя'}>
       <span class="mark" aria-hidden="true"><i></i><i></i><i></i><b></b></span>
@@ -35,7 +36,7 @@ const { author: a } = Astro.props;
 </section>
 
 <style>
-  .author { padding-block: var(--section-space); background: var(--color-bg-alt); scroll-margin-top: 4.5rem; }
+  .author { padding-block: var(--section-space); scroll-margin-top: 4.5rem; }
   .grid {
     display: grid;
     grid-template-columns: minmax(0, 4fr) minmax(0, 6fr);
@@ -45,37 +46,41 @@ const { author: a } = Astro.props;
   .photo {
     position: relative;
     aspect-ratio: 4 / 5;
-    max-width: 24rem;
+    max-width: 22rem;
     width: 100%;
-    border-radius: calc(var(--radius) * 2);
-    background: var(--color-surface);
-    border: 1px solid var(--color-line);
+    background:
+      radial-gradient(ellipse at 50% 35%, var(--color-walnut-raised), var(--color-walnut) 75%);
+    border: 1px solid var(--color-gold);
+    outline: 1px solid color-mix(in srgb, var(--color-gold) 55%, transparent);
+    outline-offset: -0.6rem;
+    box-shadow: 0 0 0 0.55rem var(--color-walnut), 0 0 0 calc(0.55rem + 1px) var(--color-gold), 0 40px 60px -30px color-mix(in srgb, var(--color-umber) 80%, transparent);
+    margin: 0.6rem;
     display: grid;
     place-items: center;
     overflow: hidden;
   }
-  .mark { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; width: 34%; }
-  .mark i, .mark b { aspect-ratio: 1; border-radius: 4px; }
-  .mark i:nth-child(1) { background: var(--color-graphite); }
-  .mark i:nth-child(2) { background: var(--color-sand); }
-  .mark i:nth-child(3) { background: var(--color-sand); }
+  .mark { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; width: 30%; }
+  .mark i, .mark b { aspect-ratio: 1; border-radius: 3px; }
+  .mark i:nth-child(1) { background: var(--color-parchment); }
+  .mark i:nth-child(2) { border: 1px solid var(--color-gold); }
+  .mark i:nth-child(3) { background: var(--color-gold); }
   .mark b { background: var(--color-accent); border-radius: 50%; }
   .caption {
     position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 1.25rem;
+    left: 1rem;
+    right: 1rem;
+    bottom: 1.5rem;
     text-align: center;
     font-size: var(--text-caption);
-    color: var(--color-muted);
+    color: var(--color-sepia);
   }
   .body { display: grid; gap: var(--space-3); max-width: 38rem; }
   .body > * { margin: 0; }
   .role { color: var(--color-muted); font-weight: var(--weight-medium); }
-  .text { font-size: var(--text-lead); line-height: var(--leading-lead); }
+  .text { font-family: var(--font-display); font-size: var(--text-lead); line-height: var(--leading-lead); }
   .body .btn { justify-self: start; margin-top: var(--space-2); }
   @media (max-width: 48rem) {
     .grid { grid-template-columns: 1fr; }
-    .photo { max-width: 16rem; aspect-ratio: 1; }
+    .photo { max-width: 15rem; aspect-ratio: 1; }
   }
 </style>

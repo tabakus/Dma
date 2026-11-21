@@ -11,6 +11,7 @@ import HomeMethod from '../components/home/HomeMethod.astro';
 import HomeResults from '../components/home/HomeResults.astro';
 import HomeAuthor from '../components/home/HomeAuthor.astro';
 import HomeClosing from '../components/home/HomeClosing.astro';
+import ShelfDivider from '../components/brand/ShelfDivider.astro';
 import { getHomeContent } from '../lib/site';
 
 const home = await getHomeContent();
@@ -19,6 +20,7 @@ const home = await getHomeContent();
 <BaseLayout title={home.seo?.title} description={home.seo?.description} fullBleed>
   <HomeHero hero={home.hero} />
   {home.directions && <HomeDirections directions={home.directions} />}
+  <ShelfDivider />
   {home.philosophy && <HomePhilosophy philosophy={home.philosophy} />}
   {home.method && <HomeMethod method={home.method} />}
   {home.results && <HomeResults results={home.results} />}
