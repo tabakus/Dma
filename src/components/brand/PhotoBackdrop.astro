@@ -13,6 +13,8 @@ import { getImage } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 
 interface Props {
+  /** Качество WebP (по умолчанию 78; для первого экрана выше). */
+  quality?: number;
   src: ImageMetadata;
   mobile?: ImageMetadata;
   /** Первый экран — eager, остальные — lazy. */
@@ -21,12 +23,12 @@ interface Props {
   alt?: string;
   class?: string;
 }
-const { src, mobile, eager = false, alt, class: className } = Astro.props;
+const { src, mobile, eager = false, alt, quality = 78, class: className } = Astro.props;
 
 const widths = [640, 960, 1280, 1600, 1920].filter((w) => w <= src.width * 1.5);
-const main = await getImage({ src, widths, sizes: '100vw', format: 'webp', quality: 78 });
+const main = await getImage({ src, widths, sizes: '100vw', format: 'webp', quality });
 const small = mobile
-  ? await getImage({ src: mobile, widths: [480, 720, 960].filter((w) => w <= mobile.width * 1.5), sizes: '100vw', format: 'webp', quality: 78 })
+  ? await getImage({ src: mobile, widths: [480, 720, 960].filter((w) => w <= mobile.width * 1.5), sizes: '100vw', format: 'webp', quality })
   : null;
 ---
 

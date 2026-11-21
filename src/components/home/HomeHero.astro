@@ -3,10 +3,10 @@
  * Первый экран главной. Тексты — home.yaml → hero.
  * Фон — девушка с ноутбуком и книгами в старинной библиотеке (сгенерировано владельцем, 22.11.2026):
  * на компьютере она справа, слева глубокая тень под текст; на телефоне — вертикальный кадр, девушка внизу.
- * Вокруг головы оставлено место под будущую инфографику (фразы). Файлы: hero-reader-hd.webp (десктоп, 1678 px),
+ * Вокруг головы оставлено место под будущую инфографику (фразы). Файлы: hero-reader-hd.png (десктоп, 1678 px, без потерь),
  * hero-reader-tall.jpg (телефон; логотип ноутбука удалён ретушью). Прежний кадр hero-reader.jpg сохранён по просьбе владельца.
  */
-import heroWide from '../../assets/library/hero-reader-hd.webp';
+import heroWide from '../../assets/library/hero-reader-hd.png';
 import heroTall from '../../assets/library/hero-reader-tall.jpg';
 import PhotoBackdrop from '../brand/PhotoBackdrop.astro';
 import { splitAccent } from '../../lib/text';
@@ -19,7 +19,7 @@ const { hero } = Astro.props;
 ---
 
 <section class="hero" aria-labelledby="hero-title">
-  <PhotoBackdrop src={heroWide} mobile={heroTall} eager alt={hero.imageAlt} class="hero-bg" />
+  <PhotoBackdrop src={heroWide} mobile={heroTall} eager quality={88} alt={hero.imageAlt} class="hero-bg" />
   <div class="scrim" aria-hidden="true"></div>
   <div class="container grid">
     <div class="copy">
