@@ -27,7 +27,7 @@
 | Немецкие названия — первыми: в мини-блоках и на странице продукта; курс `saetze` называется «Satzbau» / «Построение предложения» (22.11.2026) | `src/components/catalog/ProductTile.astro`, `src/components/product/ProductPage.astro` |
 | В текстах сайта нет длинных тире (—): заменены на двоеточие, запятую или точку, в заголовке вкладки — «|» (по просьбе владельца 22.11.2026; диапазоны вида A2–B1 и 18:30–20:00 остаются с коротким тире) | `src/data/*.yaml`, `src/content/` |
 | Домен `deutschmitakzent.de` подключён: регистратор INWX, DNS в Cloudflare, Custom domains в Pages, `www` → основной адрес (301), HTTPS, canonical и sitemap на домене, `ALLOWED_ORIGINS` задан (бывшие В-4 и В-21, 21.11.2026). DNSSEC не включён | `docs/cloudflare-deployment.md` |
-| Impressum и Datenschutzerklärung опубликованы: тексты из генератора eRecht24, предоставлены владельцем 21.11.2026 (бывшие В-6, В-7). В тексте Datenschutz «Cloudflare, Inc., ???» исправлено на «USA» (сбой кодировки при генерации). При выборе почтового сервиса (В-1) и добавлении новых сервисов текст нужно дополнить в генераторе | `src/content/pages/impressum.md`, `src/content/pages/datenschutz.md` |
+| Impressum и Datenschutzerklärung опубликованы: тексты из генератора eRecht24, предоставлены владельцем 21.11.2026 (бывшие В-6, В-7). В тексте Datenschutz «Cloudflare, Inc., ???» исправлено на «USA» (сбой кодировки при генерации). Контактный email: `info@deutschmitakzent.de` (пересылка Cloudflare Email Routing на личную почту владельца; только приём). При выборе почтового сервиса (В-1) и добавлении новых сервисов текст нужно дополнить в генераторе | `src/content/pages/impressum.md`, `src/content/pages/datenschutz.md` |
 
 ## Приоритет 1 — обязательно до публичного запуска формы
 
