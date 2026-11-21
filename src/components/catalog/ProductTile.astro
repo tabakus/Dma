@@ -1,6 +1,6 @@
 ---
 /**
- * Мини-блок курса или семинара: матовое стекло поверх фото, название (RU + DE) и ключевые данные —
+ * Мини-блок курса или семинара: матовое стекло поверх фото, название (сначала немецкое, под ним русское) и ключевые данные —
  * уровень, продолжительность, размер группы, старт. Только заполненные поля, ничего не подставляется.
  * Опубликованный продукт — ссылка на свою страницу (описание, план, стоимость, заявка);
  * анонс — тот же блок без ссылки, с пометкой «Скоро».
@@ -36,8 +36,16 @@ const titleId = `tile-${product.collection}-${product.id}`;
   {...linked ? { href: productUrl(product), 'aria-labelledby': titleId } : {}}
 >
   <span class="names">
-    <Heading id={titleId} class="title">{d.title}</Heading>
-    {d.titleDe && <span class="de" lang="de">{d.titleDe}</span>}
+    {
+      d.titleDe ? (
+        <>
+          <Heading id={titleId} class="title" lang="de">{d.titleDe}</Heading>
+          <span class="sub">{d.title}</span>
+        </>
+      ) : (
+        <Heading id={titleId} class="title">{d.title}</Heading>
+      )
+    }
   </span>
 
   {
@@ -115,7 +123,7 @@ const titleId = `tile-${product.collection}-${product.id}`;
     letter-spacing: 0;
     color: var(--color-parchment);
   }
-  .de { font-size: var(--text-small); color: var(--color-gold-light); }
+  .sub { font-size: var(--text-small); color: var(--color-gold-light); }
 
   .facts { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0; }
   .fact dd {
