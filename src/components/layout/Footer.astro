@@ -107,9 +107,6 @@ const legal = site.footerNav.filter((l) => published.has(l.href));
   .base p { margin: 0; }
   .copy { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.5rem; }
   .note { display: inline-flex; align-items: center; gap: 0.6rem; }
-  /* полоса цветов флага по верхнему краю подвала */
-  .site-footer { position: relative; }
-  .site-footer::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 6px; background: var(--flag-stripes-h); box-shadow: inset 0 1px 0 var(--flag-edge); }
   .base ul { display: flex; gap: var(--space-4); }
   @media (max-width: 48rem) {
     .inner { grid-template-columns: 1fr; gap: var(--space-4); }
