@@ -21,7 +21,6 @@ const { hero } = Astro.props;
 <section class="hero" aria-labelledby="hero-title">
   <PhotoBackdrop src={heroWide} mobile={heroTall} eager quality={88} alt={hero.imageAlt} class="hero-bg" />
   <div class="scrim" aria-hidden="true"></div>
-  <span class="ribbon" aria-hidden="true"></span>
   <div class="container grid">
     <div class="copy">
       {hero.eyebrow && <p class="eyebrow">{hero.eyebrow}</p>}
@@ -75,21 +74,6 @@ const { hero } = Astro.props;
         color-mix(in srgb, var(--color-walnut) 20%, transparent) 52%,
         transparent 64%);
   }
-  /* Закладка-ленточка в цветах флага Германии: свисает сверху, как закладка в старой книге */
-  .ribbon {
-    position: absolute;
-    z-index: 0;
-    top: 0;
-    left: max(52%, 30rem);
-    width: clamp(40px, 4.5vw, 64px);
-    height: clamp(170px, 22vw, 290px);
-    background: var(--flag-stripes-v);
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 86%, 0 100%);
-    filter: drop-shadow(0 0 1px var(--flag-edge)) drop-shadow(0 0 0.5px var(--flag-edge)) drop-shadow(0 12px 18px rgb(0 0 0 / 0.6));
-    animation: ribbon-drop 0.9s 0.2s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-    pointer-events: none;
-  }
-  @keyframes ribbon-drop { from { transform: translateY(-100%); } }
   .grid { display: grid; position: relative; z-index: 1; }
   .copy { display: grid; gap: var(--space-4); min-width: 0; max-width: min(38rem, 46vw); }
   .copy .eyebrow { margin: 0; }
@@ -130,7 +114,7 @@ const { hero } = Astro.props;
   .copy { animation: emerge 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
   @keyframes emerge { from { opacity: 0; transform: translateY(12px); } }
   @media (prefers-reduced-motion: reduce) {
-    .copy, .ribbon { animation: none; }
+    .copy { animation: none; }
   }
 
   /* ---------- Планшет: девушка правее, текст шире ---------- */
@@ -157,8 +141,6 @@ const { hero } = Astro.props;
         var(--color-walnut) 150vw);
     }
     .copy { max-width: none; }
-    /* на телефоне ленточка свисает от верхнего края фото (под текстом), у правого края */
-    .ribbon { left: auto; right: 1.25rem; top: calc(100% - 112vw); width: 32px; height: 96px; }
   }
   @media (max-width: 30rem) {
     .actions { flex-direction: column; align-items: stretch; gap: var(--space-2); }
