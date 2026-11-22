@@ -180,6 +180,8 @@ export const siteSchema = z.strictObject({
   /** Заметная кнопка в шапке (например, «Оставить заявку»). */
   headerCta: link.optional(),
   footerNav: z.array(link),
+  /** Строка внизу подвала рядом с флажком Германии (например, «Онлайн-школа из Германии»); необязательная. */
+  footerNote: nonEmpty(80).optional(),
   form: z.strictObject({
     title: nonEmpty(120),
     labels: z.strictObject({

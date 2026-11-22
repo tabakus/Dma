@@ -74,7 +74,7 @@ const { hero } = Astro.props;
         color-mix(in srgb, var(--color-walnut) 20%, transparent) 52%,
         transparent 64%);
   }
-  .grid { display: grid; }
+  .grid { display: grid; position: relative; z-index: 1; }
   .copy { display: grid; gap: var(--space-4); min-width: 0; max-width: min(38rem, 46vw); }
   .copy .eyebrow { margin: 0; }
   h1 {

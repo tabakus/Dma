@@ -25,6 +25,7 @@ settings:
   headerCta:
     label: "Оставить заявку"
     href: /#obuchenie
+  footerNote: "Онлайн-школа из Германии"   # [предложение], выбрано владельцем 22.11.2026; рядом флажок
   footerNav:
     - label: "Impressum"
       href: /impressum/

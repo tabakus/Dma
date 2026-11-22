@@ -109,10 +109,24 @@ main:not(.full-bleed) {
 }
 .eyebrow::before {
   content: '';
-  width: 2rem;
-  height: 1px;
-  background: currentColor;
+  width: 2.4rem;
+  height: 4px;
+  border-radius: 1px;
+  background: var(--flag-stripes-v); /* цвета флага Германии */
+  box-shadow: 0 0 0 1px var(--flag-edge);
   flex: none;
+}
+
+/* Маленький флаг Германии (декоративный, aria-hidden): <span class="flag-de" aria-hidden="true"></span> */
+.flag-de {
+  display: inline-block;
+  flex: none;
+  width: 1.5em;
+  height: 0.95em;
+  border-radius: 2px;
+  background: var(--flag-stripes-h);
+  box-shadow: 0 0 0 1px var(--flag-edge);
+  vertical-align: -0.1em;
 }
 
 .btn {
