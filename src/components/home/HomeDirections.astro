@@ -5,6 +5,7 @@
  * подраздела; списки курсов и семинаров, видеоурок и подробности — уже там.
  * Заголовок раздела — home.yaml → directions; подразделы — src/data/directions.yaml.
  * Графика из языка логотипа: Grammatik — модули и круг (система), Berufseinstieg — ступени к кругу (путь в профессию).
+ * Полоска и флажок в цветах флага Германии — у обоих подразделов (решение владельца 22.11.2026).
  * Фон — книжные полки в размытии (src/assets/library/shelves-bokeh.jpg); блоки — матовое стекло:
  * фон проглядывает, а плотная тонировка и размытие держат контраст текста (запасной вариант без backdrop-filter — плотнее).
  */
@@ -55,6 +56,7 @@ function countLine(courses: number, seminars: number): string | null {
           const variant = i === 0 ? 'system' : 'path';
           return (
             <a class:list={['card', variant, d.status]} href={d.path} aria-labelledby={`dir-${direction.id}`}>
+              <span class="flagbar" aria-hidden="true" />
               <span class="art" aria-hidden="true">
                 {variant === 'system' ? (
                   <span class="modules">
@@ -78,7 +80,12 @@ function countLine(courses: number, seminars: number): string | null {
                   <h3 id={`dir-${direction.id}`} lang="de">
                     {d.title}
                   </h3>
-                  {d.subtitle && <span class="subtitle">{d.subtitle}</span>}
+                  {d.subtitle && (
+                    <span class="subtitle">
+                      <span class="flag-de" aria-hidden="true" />
+                      {d.subtitle}
+                    </span>
+                  )}
                 </span>
                 {d.status === 'active' && d.lead && <span class="lead">{d.lead}</span>}
                 <span class="foot">
@@ -181,7 +188,9 @@ function countLine(courses: number, seminars: number): string | null {
     color: var(--color-parchment);
     max-width: 13ch;
   }
-  .subtitle { font-size: var(--text-lead); font-weight: var(--weight-medium); color: var(--color-gold-light); }
+  .subtitle { display: flex; align-items: center; gap: 0.55em; font-size: var(--text-lead); font-weight: var(--weight-medium); color: var(--color-gold-light); }
+  /* полоска цветов флага по верхнему краю блока */
+  .flagbar { position: absolute; z-index: 2; left: 0; right: 0; top: 0; height: 6px; background: var(--flag-stripes-h); box-shadow: inset 0 1px 0 var(--flag-edge); }
   .lead { max-width: 36ch; font-size: var(--text-small); line-height: var(--leading-small); color: color-mix(in srgb, var(--color-parchment) 88%, transparent); }
 
   .foot {

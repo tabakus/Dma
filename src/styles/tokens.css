@@ -101,6 +101,14 @@
   /* ---------- Из логотипа (не меняются) ---------- */
   --color-pink: #f2508a; /* Akzent: логотип, главная кнопка, фирменный круг; не для текста на светлом */
   --color-ink: #1c191c; /* текст на розовом */
+  /* ---------- Цвета флага Германии (приглушены под палитру; только декоративные элементы, не для текста) ---------- */
+  --color-flag-black: #1c191c;
+  --color-flag-red: #c8102e;
+  --color-flag-gold: #e0b23a;
+  --flag-stripes-v: linear-gradient(90deg, var(--color-flag-black) 0 33.34%, var(--color-flag-red) 33.34% 66.67%, var(--color-flag-gold) 66.67% 100%);
+  /* светлая окантовка, чтобы чёрная полоса флага не сливалась с тёмным фоном */
+  --flag-edge: color-mix(in srgb, var(--color-parchment) 45%, transparent);
+  --flag-stripes-h: linear-gradient(180deg, var(--color-flag-black) 0 33.34%, var(--color-flag-red) 33.34% 66.67%, var(--color-flag-gold) 66.67% 100%);
   --color-logo-light: #fbf3ea; /* белый из логотипа (вариант dark): слоган под логотипом */
 
   /* ---------- Семантические роли: тёмная «библиотека» (по умолчанию) ---------- */
